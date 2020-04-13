@@ -3,7 +3,7 @@
 
 <div class="controls {{ field_class }}"{% if flat_attrs %}
   {{ flat_attrs|safe }}{% endif %}>
-  {% include 'bootstrap3/layout/field_errors_block.html' %}
+  {% include 'bootstrap4/layout/field_errors_block.html' %}
   {% for choice in field.field.choices %}
     <div class="checkbox{% if inline_class %}-{{ inline_class }}{% endif %}">
       <label>
@@ -16,5 +16,5 @@
     </div>
   {% endfor %}
 
-  {% include 'bootstrap3/layout/help_text.html' %}
+  {% include 'bootstrap4/layout/help_text.html' %}
 </div>

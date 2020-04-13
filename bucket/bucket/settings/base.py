@@ -137,7 +137,7 @@ ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 #ACCOUNT_FORMS = {'change_password': 'users.forms.SystersChangePasswordForm'}
 
 # Django Crispy Forms configuration
-CRISPY_TEMPLATE_PACK = 'bootstrap3'
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())
