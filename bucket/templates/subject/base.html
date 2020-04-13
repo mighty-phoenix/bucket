@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {{ subject }}
+{% endblock %}
+
+{% block content %}
+  <div class="row mt40">
+    <div class="col-md-12">
+      <h1>{{ subject }}</h1>
+      <hr/>
+    </div>
+    <div class="col-sm-9">
+      <ul class="nav nav-pills">
+        <li {% if 'books' in request.path %} class="active" {% endif %}>
+          <a class="nav-link" href="{% url "view_subject" subject.slug %}#books">Books</a> 
+        </li>
+        <li {% if 'movies' in request.path %} class="active" {% endif %}>
+          <a class="nav-link" href="{% url "view_subject" subject.slug %}#movies">Movies</a> 
+        </li>
+        <li {% if 'documentaries' in request.path %} class="active" {% endif %}>
+          <a class="nav-link" href="{% url "view_subject" subject.slug %}#documentaries">Documentaries</a> 
+        </li>
+        <li {% if 'youtube-channels' in request.path %} class="active" {% endif %}>
+          <a class="nav-link" href="{% url "view_subject" subject.slug %}#youtube-channels">YouTube Channels</a> 
+        </li>
+        <li {% if 'websites' in request.path %} class="active" {% endif %}>
+          <a class="nav-link" href="{% url "view_subject" subject.slug %}#websites">Websites</a> 
+        </li>
+        <li {% if 'facebook-pages' in request.path %} class="active" {% endif %}>
+          <a class="nav-link" href="{% url "view_subject" subject.slug %}#facebook-pages">Facebook Pages</a> 
+        </li>
+        <li {% if 'instagram-pages' in request.path %} class="active" {% endif %}>
+          <a class="nav-link" href="{% url "view_subject" subject.slug %}#instagram-pages">Instagram Pages</a> 
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-9">
+      {% block subject_page_content %}
+      {% endblock %}
+    </div>
+    <div class="col-sm-3">
+      <p>text</p>
+      <p>more text</p>
+      {% block extra_sidebar %}{% endblock %}
+    </div>
+  </div>
+{% endblock %}

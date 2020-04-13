@@ -1,0 +1,41 @@
+{% extends "subject/base.html" %}
+
+{% block subject_page_content %}
+<div class="container-fluid mt40">
+    <a name="books"></a>
+      <h2>Books</h2>
+      <p>
+        {{ subject.books | linebreaks }}
+      </p>
+    <a name="movies"></a>
+      <h2>Movies</h2>
+      <p>
+        {{ subject.movies | linebreaks }}
+      </p>
+    <a name="documentaries"></a>
+      <h2>Documentaries</h2>
+      <p>
+        {{ subject.docs | linebreaks }}
+      </p>
+    <a name="youtube-channels"></a>
+      <h2>YouTube Channels</h2>
+      <p>
+        {{ subject.yt_channels | linebreaks }}
+      </p>
+    <a name="websites"></a>
+      <h2>Websites</h2>
+      <p>
+        {{ subject.websites | linebreaks }}
+      </p>
+    <a name="facebook-pages"></a>
+      <h2>Facebook Pages</h2>
+      <p>
+        {{ subject.fb_pages | linebreaks }}
+      </p>
+    <a name="instagram-pages"></a>
+      <h2>Instagram Pages</h2>
+      <p>
+        {{ subject.insta_pages | linebreaks }}
+      </p>
+</div>
+{% endblock %}

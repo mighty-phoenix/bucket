@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Subjects
+{% endblock %}
+
+{% block content %}
+<h2 class="mt40 text-center">Subjects</h2>
+<div class="container-fluid mt40">
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">Books</th>
+        <th scope="col">Movies</th>
+        <th scope="col">Documentaries</th>
+        <th scope="col">YouTube Channels</th>
+        <th scope="col">Websites</th>
+        <th scope="col">Facebook Pages</th>
+        <th scope="col">Instagram Pages</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for sub in subject_list %}
+      <tr>
+        <th scope="row">
+          <a href="{% url "view_subject" sub.slug %}">{{ sub.name }}</a>
+        </th>
+        <td><a href="{% url "view_subject" sub.slug %}#books"><i class="fa fa-book"></i></a></td>
+        <td><a href="{% url "view_subject" sub.slug %}#movies"><i class="fa fa-film"></i></a></td>
+        <td><a href="{% url "view_subject" sub.slug %}#documentaries"><i class="fa fa-play-circle"></a></td>
+        <td><a href="{% url "view_subject" sub.slug %}#youtube-channels"><i class="fa fa-youtube"></a></td>
+        <td><a href="{% url "view_subject" sub.slug %}#websites"><i class="fa fa-globe"></a></td>
+        <td><a href="{% url "view_subject" sub.slug %}#facebook-pages"><i class="fa fa-facebook-official"></a></td>
+        <td><a href="{% url "view_subject" sub.slug %}#instagram-pages"><i class="fa fa-instagram"></a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
