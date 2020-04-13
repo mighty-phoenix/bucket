@@ -5,12 +5,13 @@
 {% endblock %}
 
 {% block content %}
+<div class="container col-md-8 col-md-offset-2 col-lg-10 col-lg-offset-1 mt40">
   <div class="row mt40">
     <div class="col-md-12">
       <h1>{{ subject }}</h1>
       <hr/>
     </div>
-    <div class="col-sm-9">
+    <div class="col-sm-12">
       <ul class="nav nav-pills">
         <li {% if 'books' in request.path %} class="active" {% endif %}>
           <a class="nav-link" href="{% url "view_subject" subject.slug %}#books">Books</a> 
@@ -43,9 +44,11 @@
       {% endblock %}
     </div>
     <div class="col-sm-3">
+      <div class="mt40"></div>
       <p>text</p>
       <p>more text</p>
       {% block extra_sidebar %}{% endblock %}
     </div>
   </div>
+</div>
 {% endblock %}

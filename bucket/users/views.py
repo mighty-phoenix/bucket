@@ -16,7 +16,8 @@ class UserView(LoginRequiredMixin, TemplateView):
         """Supply additional context data for the template"""
         context = super(UserView, self).get_context_data(**kwargs)
         username = context['username']
-        context['bucketuser'] = get_object_or_404(BucketUser, user__username=username)
+        bucketuser = get_object_or_404(BucketUser, user__username=username)
+        context['bucketuser'] = bucketuser
         return context
 
 
