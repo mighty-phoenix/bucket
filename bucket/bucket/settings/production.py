@@ -1,17 +1,9 @@
 from .base import *
+import dj_database_url
 
 DEBUG = False
 TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': '',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
+DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
 INTERNAL_IPS = ('127.0.0.1',)
