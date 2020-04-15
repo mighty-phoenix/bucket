@@ -5,37 +5,43 @@
     <a name="books"></a>
       <h2>Books</h2>
       <p>
-        {{ subject.books | linebreaks }}
+        {{ subject.books | linebreaks | urlize }}
       </p>
+    <div class="mt40"></div>
     <a name="movies"></a>
       <h2>Movies</h2>
       <p>
-        {{ subject.movies | linebreaks }}
+        {{ subject.movies | linebreaks | urlize }}
       </p>
+    <div class="mt40"></div>
     <a name="documentaries"></a>
       <h2>Documentaries</h2>
       <p>
-        {{ subject.docs | linebreaks }}
+        {{ subject.docs | linebreaks | urlize }}
       </p>
+    <div class="mt40"></div>
     <a name="youtube-channels"></a>
       <h2>YouTube Channels</h2>
       <p>
-        {{ subject.yt_channels | linebreaks }}
+        {{ subject.yt_channels | linebreaks | urlize }}
       </p>
+    <div class="mt40"></div>
     <a name="websites"></a>
       <h2>Websites</h2>
       <p>
-        {{ subject.websites | linebreaks }}
+        {{ subject.websites | linebreaks | urlize }}
       </p>
+    <div class="mt40"></div>
     <a name="facebook-pages"></a>
       <h2>Facebook Pages</h2>
       <p>
-        {{ subject.fb_pages | linebreaks }}
+        {{ subject.fb_pages | linebreaks | urlize }}
       </p>
+    <div class="mt40"></div>
     <a name="instagram-pages"></a>
       <h2>Instagram Pages</h2>
       <p>
-        {{ subject.insta_pages | linebreaks }}
+        {{ subject.insta_pages | linebreaks | urlize }}
       </p>
 </div>
 {% endblock %}
