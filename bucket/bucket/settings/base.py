@@ -10,7 +10,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'eyq^w1zc7)%5e^2e61demm-0cyai*pt=xnx4k@m2_d(h@!j-s)'
+SECRET_KEY = os.environ['SECRET_KEY']
 
 
 ALLOWED_HOSTS = ['bluebucket.herokuapp.com']
