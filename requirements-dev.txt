@@ -1,2 +1,2 @@
--r prod.txt
+-r requirements.txt
 django-nose==1.4.6
