@@ -11,34 +11,29 @@
       <h1>{{ subject }}</h1>
       <hr/>
     </div>
-    <div class="col-sm-12">
-      <ul class="nav nav-tabs" role="tablist">
+    <div class="col-sm-9">
+      <ul class="nav nav-pills" role="tablist">
         <li {% if 'books' in request.path %} class="active" {% endif %}>
-          <a class="nav-link" data-toggle="tab" href="#books">Books</a>
+          <a class="nav-link" id="books-tab" data-toggle="pill" role="tab" href="#books" aria-controls="books">Books</a>
         </li>
         <li {% if 'movies' in request.path %} class="active" {% endif %}>
-          <a class="nav-link" data-toggle="tab" href="#movies">Movies</a>
+          <a class="nav-link" id="movies-tab" data-toggle="pill" role="tab" href="#movies" aria-controls="movies">Movies</a>
         </li>
         <li {% if 'documentaries' in request.path %} class="active" {% endif %}>
-          <a class="nav-link" data-toggle="tab" href="#documentaries">Documentaries</a>
+          <a class="nav-link" id="documentaries-tab" data-toggle="pill" role="tab" href="#documentaries" aria-controls="documentaries">Documentaries</a>
         </li>
         <li {% if 'websites' in request.path %} class="active" {% endif %}>
-          <a class="nav-link" data-toggle="tab" href="#websites">Websites</a>
+          <a class="nav-link" id="websites-tab" data-toggle="pill" role="tab" href="#websites" aria-controls="websites">Websites</a>
         </li>
         <li {% if 'youtube-channels' in request.path %} class="active" {% endif %}>
-          <a class="nav-link" data-toggle="tab" href="#youtube-channels">YouTube Channels</a>
+          <a class="nav-link" id="youtube-channels-tab" data-toggle="pill" role="tab" href="#youtube-channels" aria-controls="youtube-channels">YouTube Channels</a>
         </li>
         <li {% if 'social-media' in request.path %} class="active" {% endif %}>
-          <a class="nav-link" data-toggle="tab" href="#social-media">Social Media</a>
+          <a class="nav-link" id="social-media-tab" data-toggle="pill" role="tab" href="#social-media" aria-controls="social-media">Social Media</a>
         </li>
       </ul>
-    </div>
-  </div>
-
-  <div class="row mt40">
-    <div class="col-sm-9">
-      <div class="container-fluid tab-content">
-        <div class="tab-pane fade active show" id="books">
+      <div class="tab-content mt40">
+        <div class="tab-pane fade show active" role="tabpanel" id="books" aria-labelledby="books-tab">
           {% for t in book %}
           <h3>{{ t.title }}</h3>
           <b><em>{{ t.creator }}</em></b>
@@ -46,7 +41,7 @@
           <p>{{ t.link | linebreaks | urlize }}</p>
           {% endfor %}
         </div>
-        <div class="tab-pane fade show" id="movies">
+        <div class="tab-pane fade show" role="tabpanel" id="movies" aria-labelledby="movies-tab">
           {% for t in movie %}
           <h3>{{ t.title }}</h3>
           <b><em>{{ t.creator }}</em></b>
@@ -54,7 +49,7 @@
           <p>{{ t.link | linebreaks | urlize }}</p>
           {% endfor %}
         </div>
-        <div class="tab-pane fade" id="documentaries">
+        <div class="tab-pane fade show" role="tabpanel" id="documentaries" aria-labelledby="documentaries-tab">
           {% for t in documentary %}
           <h3>{{ t.title }}</h3>
           <b><em>{{ t.creator }}</em></b>
@@ -62,7 +57,7 @@
           <p>{{ t.link | linebreaks | urlize }}</p>
           {% endfor %}
         </div>
-        <div class="tab-pane fade" id="websites">
+        <div class="tab-pane fade show" role="tabpanel" id="websites" aria-labelledby="websites-tab">
           {% for t in website %}
           <h3>{{ t.title }}</h3>
           <b><em>{{ t.creator }}</em></b>
@@ -70,7 +65,7 @@
           <p>{{ t.link | linebreaks | urlize }}</p>
           {% endfor %}
         </div>
-        <div class="tab-pane fade" id="youtube-channels">
+        <div class="tab-pane fade show" role="tabpanel" id="youtube-channels" aria-labelledby="youtube-channels-tab">
           {% for t in yt_channel %}
           <h3>{{ t.title }}</h3>
           <b><em>{{ t.creator }}</em></b>
@@ -78,7 +73,7 @@
           <p>{{ t.link | linebreaks | urlize }}</p>
           {% endfor %}
         </div>
-        <div class="tab-pane fade" id="social-media">
+        <div class="tab-panes fade show" role="tabpanel" id="social-media" aria-labelledby="social-media-tab">
           {% for t in social_media %}
           <h3>{{ t.title }}</h3>
           <b><em>{{ t.creator }}</em></b>
