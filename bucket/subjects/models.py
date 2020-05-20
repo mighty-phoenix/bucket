@@ -1,4 +1,5 @@
 from django.db import models
+from subjects.constants import CONTENT_TYPES
 
 
 class Subject(models.Model):
@@ -23,16 +24,7 @@ class Content(models.Model):
     """Model to store content related to a subject"""
     subject = models.ManyToManyField(Subject)
     title = models.CharField(max_length=255, unique=True, verbose_name="Title")
-    CONTENT_TYPE_CHOICES = [
-        ('book', 'Book'),
-        ('movie', 'Movie'),
-        ('doc', 'Documentary'),
-        ('website', 'Website'),
-        ('yt_channel', 'Youtube Channel'),
-        ('social_media', 'Social Media'),
-        ('other', 'Other'),
-    ]
-    type = models.CharField(max_length=20, choices=CONTENT_TYPE_CHOICES, \
+    type = models.CharField(max_length=20, choices=CONTENT_TYPES, \
                             default='other', verbose_name="Content Type")
     creator = models.CharField(max_length=255, blank=True, verbose_name="Creator")
     description = models.TextField(blank=True, verbose_name="Description")

@@ -4,7 +4,8 @@ from django.views.generic.base import TemplateView
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 
-from subjects.models import Subject
+from subjects.models import Subject, Content
+from subjects.constants import CONTENT_TYPES
 
 
 class SubjectsList(ListView):
@@ -23,4 +24,6 @@ class SubjectView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(SubjectView, self).get_context_data(**kwargs)
         context['subject'] = self.object
+        for ct in CONTENT_TYPES:
+            context[ct[0]] = Content.objects.filter(subject=self.object, type=ct[0])
         return context

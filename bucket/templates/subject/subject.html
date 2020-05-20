@@ -1,47 +1,96 @@
-{% extends "subject/base.html" %}
+{% extends "base.html" %}
 
-{% block subject_page_content %}
-<div class="container-fluid mt40">
-    <a name="books"></a>
-      <h2>Books</h2>
-      <p>
-        {{ subject.books | linebreaks | urlize }}
-      </p>
-    <div class="mt40"></div>
-    <a name="movies"></a>
-      <h2>Movies</h2>
-      <p>
-        {{ subject.movies | linebreaks | urlize }}
-      </p>
-    <div class="mt40"></div>
-    <a name="documentaries"></a>
-      <h2>Documentaries</h2>
-      <p>
-        {{ subject.docs | linebreaks | urlize }}
-      </p>
-    <div class="mt40"></div>
-    <a name="youtube-channels"></a>
-      <h2>YouTube Channels</h2>
-      <p>
-        {{ subject.yt_channels | linebreaks | urlize }}
-      </p>
-    <div class="mt40"></div>
-    <a name="websites"></a>
-      <h2>Websites</h2>
-      <p>
-        {{ subject.websites | linebreaks | urlize }}
-      </p>
-    <div class="mt40"></div>
-    <a name="facebook-pages"></a>
-      <h2>Facebook Pages</h2>
-      <p>
-        {{ subject.fb_pages | linebreaks | urlize }}
-      </p>
-    <div class="mt40"></div>
-    <a name="instagram-pages"></a>
-      <h2>Instagram Pages</h2>
-      <p>
-        {{ subject.insta_pages | linebreaks | urlize }}
-      </p>
+{% block title %}
+  {{ subject }}
+{% endblock %}
+
+{% block content %}
+<div class="container col-md-8 col-md-offset-2 col-lg-10 col-lg-offset-1 mt40">
+  <div class="row mt40">
+    <div class="col-md-12">
+      <h1>{{ subject }}</h1>
+      <hr/>
+    </div>
+    <div class="col-sm-12">
+      <ul class="nav nav-tabs" role="tablist">
+        <li {% if 'books' in request.path %} class="active" {% endif %}>
+          <a class="nav-link" data-toggle="tab" href="#books">Books</a>
+        </li>
+        <li {% if 'movies' in request.path %} class="active" {% endif %}>
+          <a class="nav-link" data-toggle="tab" href="#movies">Movies</a>
+        </li>
+        <li {% if 'documentaries' in request.path %} class="active" {% endif %}>
+          <a class="nav-link" data-toggle="tab" href="#documentaries">Documentaries</a>
+        </li>
+        <li {% if 'websites' in request.path %} class="active" {% endif %}>
+          <a class="nav-link" data-toggle="tab" href="#websites">Websites</a>
+        </li>
+        <li {% if 'youtube-channels' in request.path %} class="active" {% endif %}>
+          <a class="nav-link" data-toggle="tab" href="#youtube-channels">YouTube Channels</a>
+        </li>
+        <li {% if 'social-media' in request.path %} class="active" {% endif %}>
+          <a class="nav-link" data-toggle="tab" href="#social-media">Social Media</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row mt40">
+    <div class="col-sm-9">
+      <div class="container-fluid tab-content">
+        <div class="tab-pane fade active show" id="books">
+          {% for t in book %}
+          <h3>{{ t.title }}</h3>
+          <b><em>{{ t.creator }}</em></b>
+          <p>{{ t.description | linebreaks | urlize }}</p>
+          <p>{{ t.link | linebreaks | urlize }}</p>
+          {% endfor %}
+        </div>
+        <div class="tab-pane fade show" id="movies">
+          {% for t in movie %}
+          <h3>{{ t.title }}</h3>
+          <b><em>{{ t.creator }}</em></b>
+          <p>{{ t.description | linebreaks | urlize }}</p>
+          <p>{{ t.link | linebreaks | urlize }}</p>
+          {% endfor %}
+        </div>
+        <div class="tab-pane fade" id="documentaries">
+          {% for t in documentary %}
+          <h3>{{ t.title }}</h3>
+          <b><em>{{ t.creator }}</em></b>
+          <p>{{ t.description | linebreaks | urlize }}</p>
+          <p>{{ t.link | linebreaks | urlize }}</p>
+          {% endfor %}
+        </div>
+        <div class="tab-pane fade" id="websites">
+          {% for t in website %}
+          <h3>{{ t.title }}</h3>
+          <b><em>{{ t.creator }}</em></b>
+          <p>{{ t.description | linebreaks | urlize }}</p>
+          <p>{{ t.link | linebreaks | urlize }}</p>
+          {% endfor %}
+        </div>
+        <div class="tab-pane fade" id="youtube-channels">
+          {% for t in yt_channel %}
+          <h3>{{ t.title }}</h3>
+          <b><em>{{ t.creator }}</em></b>
+          <p>{{ t.description | linebreaks | urlize }}</p>
+          <p>{{ t.link | linebreaks | urlize }}</p>
+          {% endfor %}
+        </div>
+        <div class="tab-pane fade" id="social-media">
+          {% for t in social_media %}
+          <h3>{{ t.title }}</h3>
+          <b><em>{{ t.creator }}</em></b>
+          <p>{{ t.description | linebreaks | urlize }}</p>
+          <p>{{ t.link | linebreaks | urlize }}</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      {% block extra_sidebar %}{% endblock %}
+    </div>
+  </div>
 </div>
 {% endblock %}
