@@ -13,13 +13,6 @@
       <span class="glyphicon glyphicon-envelope"></span>
       <span class="profile-element">{{ bucketuser.user.email|urlize }}</span>
     </p>
-    {% for name, value in bucketuser.get_fields %}
-      {% with "blog_url homepage_url" as profile_fields %}
-        {% if name in profile_fields and value %}
-          <p class="profile-row">{% verbose_name bucketuser name %}: {{ value|urlize }}</p>
-        {% endif %}
-      {% endwith %}
-    {% endfor %}
     {% if user == bucketuser.user or user.is_superuser %}
       <div class="pull-right">
         <a href="{% url 'user_profile' bucketuser.user.username %}"

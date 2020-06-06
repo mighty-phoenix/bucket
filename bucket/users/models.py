@@ -6,12 +6,12 @@ from django.dispatch import receiver
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
+from subjects.models import Content
+
 class BucketUser(models.Model):
     """Profile model to store additional information about a user"""
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    blog_url = models.URLField(max_length=255, blank=True, verbose_name="Blog")
-    homepage_url = models.URLField(max_length=255, blank=True,
-                                   verbose_name="Homepage")
+    bio = models.URLField(max_length=255, blank=True, verbose_name="Bio")
     profile_picture = models.ImageField(upload_to='users/pictures/',
                                         blank=True,
                                         null=True,
@@ -54,3 +54,13 @@ def create_bucket_user(sender, instance, created, **kwargs):
         if instance is not None:
             bucket_user = BucketUser(user=instance)
             bucket_user.save()
+
+
+class List(models.Model):
+    """Content lists which can be created for each user."""
+    user = models.ForeignKey(BucketUser, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255, verbose_name="List Name")
+    content = models.ManyToManyField(Content)
+
+    def __str__(self):
+        return self.name

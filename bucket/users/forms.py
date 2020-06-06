@@ -37,7 +37,7 @@ class BucketUserForm(forms.ModelForm):
     """Form for BucketUser model"""
     class Meta:
         model = BucketUser
-        fields = ('blog_url', 'homepage_url', 'profile_picture')
+        fields = ('bio', 'profile_picture')
 
 
 '''
