@@ -8,11 +8,11 @@
 <div class="container col-md-8 col-md-offset-2 col-lg-10 col-lg-offset-1 mt40">
   <div class="row mt40">
     <div class="col-md-12">
-      <h1>{{ subject }}</h1>
+      <h1 class="text-center">{{ subject }}</h1>
       <hr/>
     </div>
-    <div class="col-sm-9">
-      <ul class="nav nav-pills" role="tablist">
+    <div class="col-sm-12">
+      <ul class="nav nav-pills justify-content-center" role="tablist">
         <li {% if 'books' in request.path %} class="active" {% endif %}>
           <a class="nav-link" id="books-tab" data-toggle="pill" role="tab" href="#books" aria-controls="books">Books</a>
         </li>
@@ -35,56 +35,107 @@
       <div class="tab-content mt40">
         <div class="tab-pane fade show active" role="tabpanel" id="books" aria-labelledby="books-tab">
           {% for t in book %}
-          <h3>{{ t.title }}</h3>
-          <b><em>{{ t.creator }}</em></b>
-          <p>{{ t.description | linebreaks | urlize }}</p>
-          <p>{{ t.link | linebreaks | urlize }}</p>
+          <div class="card border-light text-center mb-3">
+            <h3>{{ t.title }}</h3>
+            <b><em>{{ t.creator }}</em></b>
+            {% if t.image %}
+            <img class="card-image img-fluid" src="{{ t.image_thumbnail.url }}" alt="Image" style="width: 100px" />
+            {% endif %}
+            {% if t.description %}
+            <p>{{ t.description | linebreaks | urlize }}</p>
+            {% endif %}
+            {% if t.link %}
+            <p>{{ t.link | linebreaks | urlize }}</p>
+            {% endif %}
+          </div>
           {% endfor %}
         </div>
         <div class="tab-pane fade show" role="tabpanel" id="movies" aria-labelledby="movies-tab">
           {% for t in movie %}
-          <h3>{{ t.title }}</h3>
-          <b><em>{{ t.creator }}</em></b>
-          <p>{{ t.description | linebreaks | urlize }}</p>
-          <p>{{ t.link | linebreaks | urlize }}</p>
+          <div class="card border-light text-center mb-3">
+            <h3>{{ t.title }}</h3>
+            <b><em>{{ t.creator }}</em></b>
+            {% if t.image %}
+            <img src="{{ t.image_thumbnail.url }}" alt="Image" style="width: 100px" />
+            {% endif %}
+            {% if t.description %}
+            <p>{{ t.description | linebreaks | urlize }}</p>
+            {% endif %}
+            {% if t.link %}
+            <p>{{ t.link | linebreaks | urlize }}</p>
+            {% endif %}
+          </div>
           {% endfor %}
         </div>
         <div class="tab-pane fade show" role="tabpanel" id="documentaries" aria-labelledby="documentaries-tab">
           {% for t in documentary %}
-          <h3>{{ t.title }}</h3>
-          <b><em>{{ t.creator }}</em></b>
-          <p>{{ t.description | linebreaks | urlize }}</p>
-          <p>{{ t.link | linebreaks | urlize }}</p>
+          <div class="card border-light text-center mb-3">
+            <h3>{{ t.title }}</h3>
+            <b><em>{{ t.creator }}</em></b>
+            {% if t.image %}
+            <img src="{{ t.image_thumbnail.url }}" alt="Image" style="width: 100px" />
+            {% endif %}
+            {% if t.description %}
+            <p>{{ t.description | linebreaks | urlize }}</p>
+            {% endif %}
+            {% if t.link %}
+            <p>{{ t.link | linebreaks | urlize }}</p>
+            {% endif %}
+          </div>
           {% endfor %}
         </div>
         <div class="tab-pane fade show" role="tabpanel" id="websites" aria-labelledby="websites-tab">
           {% for t in website %}
-          <h3>{{ t.title }}</h3>
-          <b><em>{{ t.creator }}</em></b>
-          <p>{{ t.description | linebreaks | urlize }}</p>
-          <p>{{ t.link | linebreaks | urlize }}</p>
+          <div class="card border-light text-center mb-3">
+            <h3>{{ t.title }}</h3>
+            <b><em>{{ t.creator }}</em></b>
+            {% if t.image %}
+            <img src="{{ t.image_thumbnail.url }}" alt="Image" style="width: 100px" />
+            {% endif %}
+            {% if t.description %}
+            <p>{{ t.description | linebreaks | urlize }}</p>
+            {% endif %}
+            {% if t.link %}
+            <p>{{ t.link | linebreaks | urlize }}</p>
+            {% endif %}
+          </div>
           {% endfor %}
         </div>
         <div class="tab-pane fade show" role="tabpanel" id="youtube-channels" aria-labelledby="youtube-channels-tab">
           {% for t in yt_channel %}
-          <h3>{{ t.title }}</h3>
-          <b><em>{{ t.creator }}</em></b>
-          <p>{{ t.description | linebreaks | urlize }}</p>
-          <p>{{ t.link | linebreaks | urlize }}</p>
+          <div class="card border-light text-center mb-3">
+            <h3>{{ t.title }}</h3>
+            <b><em>{{ t.creator }}</em></b>
+            {% if t.image %}
+            <img src="{{ t.image_thumbnail.url }}" alt="Image" style="width: 100px" />
+            {% endif %}
+            {% if t.description %}
+            <p>{{ t.description | linebreaks | urlize }}</p>
+            {% endif %}
+            {% if t.link %}
+            <p>{{ t.link | linebreaks | urlize }}</p>
+            {% endif %}
+          </div>
           {% endfor %}
         </div>
         <div class="tab-panes fade show" role="tabpanel" id="social-media" aria-labelledby="social-media-tab">
           {% for t in social_media %}
-          <h3>{{ t.title }}</h3>
-          <b><em>{{ t.creator }}</em></b>
-          <p>{{ t.description | linebreaks | urlize }}</p>
-          <p>{{ t.link | linebreaks | urlize }}</p>
+          <div class="card border-light text-center mb-3">
+            <h3>{{ t.title }}</h3>
+            <b><em>{{ t.creator }}</em></b>
+            {% if t.image %}
+            <img src="{{ t.image_thumbnail.url }}" alt="Image" style="width: 100px" />
+            {% endif %}
+            {% if t.description %}
+            <p>{{ t.description | linebreaks | urlize }}</p>
+            {% endif %}
+            {% if t.link %}
+            <p>{{ t.link | linebreaks | urlize }}</p>
+            {% endif %}
+          </div>
           {% endfor %}
         </div>
       </div>
-    </div>
-    <div class="col-sm-3">
-      {% block extra_sidebar %}{% endblock %}
     </div>
   </div>
 </div>
