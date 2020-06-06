@@ -11,7 +11,7 @@ from subjects.models import Content
 class BucketUser(models.Model):
     """Profile model to store additional information about a user"""
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    bio = models.URLField(max_length=255, blank=True, verbose_name="Bio")
+    bio = models.TextField(blank=True, verbose_name="Bio")
     profile_picture = models.ImageField(upload_to='users/pictures/',
                                         blank=True,
                                         null=True,
