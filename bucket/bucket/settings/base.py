@@ -141,7 +141,7 @@ MEDIA_URL = "/media/"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = True
 ACCOUNT_ADAPTER = 'users.adapter.BucketUserAccountAdapter'
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_VERIFICATION = "optional"
 #ACCOUNT_FORMS = {'change_password': 'users.forms.SystersChangePasswordForm'}
 
 # Django Crispy Forms configuration
