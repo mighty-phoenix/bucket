@@ -1,0 +1,9 @@
+<div class="card border-light mb-3">
+  <div class="card-body left">
+    <h3 class="card-title">
+      <a class="card-link" href="{% url 'view_list' list.slug %}">{{ list.name }}</a>
+    </h3>
+    <p class="card-text"><em>created by {{ list.user }}</em></p>
+    <p>{{ list.description | linebreaks }}</p>
+  </div>
+</div>

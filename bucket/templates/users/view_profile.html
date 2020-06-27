@@ -1,16 +1,94 @@
 {% extends "base.html" %}
 
+{% load verbose_name %}
+
 {% block title %} - Profile of {{ bucketuser }}{% endblock %}
 
 {% block content %}
   <div class="mt40"></div>
   <div class="row">
-    <div class="col-md-12">
-      <h1>{{ bucketuser }}</h1>
-      <hr/>
+    <div class="col-sm-3 col-lg-2">
+      {% if bucketuser.profile_picture.name and bucketuser.profile_picture.name != "False" %}
+        <a class="rounded-lg"
+           href="{{ bucketuser.profile_picture.url }}"><img
+            src="{{ bucketuser.profile_picture_thumbnail.url }}" class="pull-left profile-pic"
+            alt="{{ bucketuser }} profile picture"/></a>
+        <div class="clearfix"></div>
+      {% endif %}
     </div>
-    <div class="col-md-4">
-      {% include "users/snippets/profile.html" %}
+    <div class="col-sm-9 col-lg-10">
+      <h2>{{ bucketuser }}</h2>
+      {% if user == bucketuser.user or user.is_superuser %}
+        <a href="{% url 'user_profile' bucketuser.user.username %}"
+           role="button" class="btn right">Edit profile</a>
+      {% endif %}
+      <p>
+        <span class="glyphicon glyphicon-envelope"></span>
+        {{ bucketuser.user.email|urlize }}
+      </p>
+      <hr/>
+      <p>{{ bucketuser.bio }}</p>
+    </div>
+  </div>
+  <div class="mb40"></div>
+  <div class="row">
+    <div class="col-md-9">
+      <div class="card border-light mb-3">
+        <div class="card-header left">
+          Bookmarks
+          <div class="small right">
+            <a href="{% url 'all_bookmarks' %}">View All</a>
+          </div>
+        </div>
+        <div class="card-group profile-card-group">
+          <div class="row profile-row row-cols-2 row-cols-lg-4">
+            {% for bookmark in bookmarks %}
+            <div class="col mb-3 mt-3">
+              <div class="card border-light text-center h-100">
+                <h5 class="card-title">
+                  <a class="card-link" href="{% url 'view_content' bookmark.slug %}">{{ bookmark.title }}</a>
+                </h5>
+                <p class="card-subtitle"><em>{{ bookmark.creator }}</em></p>
+                <a class="card-link" href="{{ bookmark.content_url }}" target="_blank">{{ bookmark.url_text }}</a>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div class="card border-light mb-3">
+        <div class="card-header left">
+          My Lists
+          <div class="small right">
+            <a href="{% url 'all_user_lists' %}">View All</a>
+          </div>
+        </div>
+        <div class="card-body">
+          {% for list in user_lists %}
+            <a class="card-link" href="{% url 'view_list' list.slug %}">{{ list.name }}</a>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="card border-light mb-3">
+        <div class="card-header left">
+          Bookmarked Lists
+          <div class="small right">
+            <a href="{% url 'all_bookmarked_lists' %}">View All</a>
+          </div>
+        </div>
+        <div class="card-body">
+          {% for list in bookmarked_lists %}
+            <a class="card-link" href="{% url 'view_list' list.slug %}">{{ list.name }}</a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <ul>
+      <a href="{% url 'add_content' %}" role="button" class="btn">Add content</a>
+      <a href="{% url 'add_list' %}" role="button" class="btn">Create a list</a>
+      </ul>
+      <div class="mb40"></div>
     </div>
   </div>
 {% endblock %}

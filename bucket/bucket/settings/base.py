@@ -20,6 +20,7 @@ ALLOWED_HOSTS = ['bluebucket.herokuapp.com']
 
 INSTALLED_APPS = [
     'subjects.apps.SubjectsConfig',
+    'lists.apps.ListsConfig',
     'common.apps.CommonConfig',
     'users.apps.UsersConfig',
     'django.contrib.admin',

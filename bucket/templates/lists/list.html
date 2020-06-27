@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}
+  List - {{ list.name }}
+{% endblock %}
+
+{% block content %}
+<div class="container col-lg-10 col-lg-offset-1 mt40">
+  <div class="row mt40">
+    <div class="col-sm-12">
+      <h1>
+        {{ list.name }}
+        {% if is_bookmark %}
+        <a class="btn" href="{% url 'bookmark_list' list.slug %}"><i class="fa fa-bookmark"></i></a>
+        {% else %}
+        <a class="btn" href="{% url 'bookmark_list' list.slug %}"><i class="far fa-bookmark"></i></a>
+        {% endif %}
+        <span class="right">
+          <a class="btn" href="{% url 'edit_list' list.slug %}"><i class="fas fa-pencil-alt"></i></a>
+          <a class="btn" href="{% url 'delete_list' list.slug %}"><i class="fas fa-trash-alt"></i></a>
+        </span>
+      </h1>
+      <hr/>
+      <p>{{ list.description | linebreaks}}</p>
+      <p class="text-muted small inline">
+        {{ number_of_items }} items &nbsp;
+        <!-- Button trigger modal -->
+        <span type="button" data-toggle="modal" data-target="#exampleModalCenter">
+          {% if number_of_bookmarks == 1 %}
+          {{ number_of_bookmarks }} bookmark
+          {% else %}
+          {{ number_of_bookmarks }} bookmarks
+          {% endif %}
+        </span>
+      </p>
+
+      <!-- Modal -->
+      <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+          <div class="modal-content">
+            <div class="modal-body text-center">
+              <ul class="list-unstyled">
+                {% for user in list_bookmarked_by %}
+                <li><a href="{{ user.get_absolute_url }}">{{ user }}</a></li>
+                {% empty %}
+                No bookmarks yet
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {% for content in list_content %}
+      {% include 'subjects/snippets/content_card.html' %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

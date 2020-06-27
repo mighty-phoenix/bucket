@@ -2,9 +2,9 @@
 CONTENT_TYPES = [
     ('book', 'Book'),
     ('movie', 'Movie'),
-    ('doc', 'Documentary'),
+    ('documentary', 'Documentary'),
     ('website', 'Website'),
-    ('yt_channel', 'Youtube Channel'),
+    ('youtube_channel', 'Youtube Channel'),
     ('social_media', 'Social Media'),
     ('other', 'Other'),
 ]

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Subjects
+{% endblock %}
+
+{% block content %}
+<h1 class="mt40 text-center">Subjects</h1>
+<div class="container-fluid mt40">
+  <div class="row">
+    {% for subject in subject_list %}
+      <div class="col-xs-6 col-md-3">
+        <div class="card bg-light border-light text-center mb-3">
+          <div class="card-body">
+            <a class="card-link" href="{% url 'view_subject_page' subject.slug %}">{{ subject.name }}</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

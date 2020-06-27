@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Delete {{ object.title }}
+{% endblock %}
+
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="row mt40">
+  <div class="col-md-12">
+    <h2>Confirm to delete "{{ object.title }}"</h2>
+    <hr/>
+  </div>
+  <div class="col-md-12">
+    <form action="{% url 'delete_content' object.slug %}" method="post">
+    {% csrf_token %}
+    <p>Are you sure you want to delete "{{ object.title }}"?</p>
+    <input type="submit" value="Confirm" class="btn btn-danger" />
+  </form>
+  </div>
+</div>
+{% endblock %}

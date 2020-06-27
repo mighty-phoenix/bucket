@@ -1,99 +1,99 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="A Bucket of relevant knowledge in an ocean of information.">
-
+  <meta name="description" content="">
   <title>Bucket{% block title %}{% endblock %}</title>
 
   {% load staticfiles %}
-  <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
   <link href="{% static 'css/style.css' %}" rel="stylesheet">
+  <script src="https://kit.fontawesome.com/841887053c.js" crossorigin="anonymous"></script>
 
-  <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
-
-  {% block head %}{% endblock %}
+  <meta name="theme-color" content="#563d7c">
 
 </head>
 
 <body>
-<div class="navbar navbar-expand-lg navbar-light bg-light fixed-top" role="navigation">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggler" data-toggle="collapse"
-              data-target=".navbar-collapse">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="{% url 'list_subjects' %}">Bucket</a>
-    </div>
-    <div class="collapse navbar-collapse">
-      <ul class="nav navbar-nav ml-auto">
-        {% url 'about-us' as url %}
-        <li {% if url == request.path %}class="active"{% endif %}>
-          <a class="nav-link" href="{{ url }}">About Us</a>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+  <a class="navbar-brand" href="{% url 'list_subjects' %}">Bucket</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+    <ul class="navbar-nav mr-auto">
+      {% url 'contents_page' as url %}
+      <li class="nav-item {% if url == request.path %}active{% endif %}">
+        <a class="nav-link" href="{{ url }}">All</a>
+      </li>
+      {% url 'lists_page' as url %}
+      <li class="nav-item {% if url == request.path %}active{% endif %}">
+        <a class="nav-link" href="{{ url }}">Lists</a>
+      </li>
+      {% url 'about-us' as url %}
+      <li class="nav-item {% if url == request.path %}active{% endif %}">
+        <a class="nav-link" href="{{ url }}">About Us</a>
+      </li>
+      {% url 'contact' as url %}
+      <li class="nav-item {% if url == request.path %}active{% endif %}">
+        <a class="nav-link" href="{{ url }}">Contact</a>
+      </li>
+    </ul>
+    <ul class="navbar-nav">
+      {% if user.is_authenticated and user.is_active %}
+        <li class="nav-item dropdown {% if '/users/' in request.path or '/accounts/' in request.path %}active{% endif %}">
+          <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ user }} <span class="caret"></span></a>
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown01">
+            <a class="dropdown-item {% if '/users/{{ user.username }}' in request.path %}active{% endif %}" href="{% url 'user' user.username %}">Profile</a>
+            {% url 'all_bookmarks' as url %}
+            <a class="dropdown-item {% if url == request.path %}active{% endif %}" href="{{ url }}">Bookmarks</a>
+            {% url 'all_user_lists' as url %}
+            <a class="dropdown-item {% if url == request.path %}active{% endif %}" href="{{ url }}">My Lists</a>
+            {% url 'all_bookmarked_lists' as url %}
+            <a class="dropdown-item {% if url == request.path %}active{% endif %}" href="{{ url }}">Bookmarked Lists</a>
+            <hr>
+            {% if user.is_staff %}
+            <a class="dropdown-item" href="{% url 'admin:index' %}">Admin Panel</a>
+            {% endif %}
+            {% url 'account_change_password' as url %}
+            <a class="dropdown-item {% if url == request.path %}active{% endif %}" href="{{ url }}">Change password</a>
+            {% url 'logout' as url %}
+            <a class="dropdown-item {% if url == request.path %}active{% endif %}" href="{{ url }}">Logout</a>
+          </div>
         </li>
-        {% url 'contact' as url %}
-        <li {% if url == request.path %}class="active"{% endif %}>
-          <a class="nav-link" href="{{ url }}">Contact</a>
+      {% else %}
+        {% url 'account_signup' as url %}
+        <li class="nav-item {% if url == request.path %}active{% endif %}">
+          <a class="nav-link" href="{{ url }}">Sign up</a>
         </li>
-      </ul>
-      {% comment "include when implementing user profiles" %}
-      <ul class="nav navbar-nav">
-        {% if user.is_authenticated and user.is_active %}
-          <p><li class="dropdown {% if '/users/' in request.path or '/accounts/' in request.path %}active{% endif %}" id="user-dropdown"></li>
-            <a href="#" class="dropdown-toggle"
-               data-toggle="dropdown">{{ user }} <span class="caret"></span></a>
-            <ul class="dropdown-menu" role="menu">
-              <li {% if '/users/' in request.path %}class="active"{% endif %}>
-                <a class="nav-link" href="{% url 'user' user.username %}">Profile</a>
-              </li>
-              {% if user.is_staff %}
-              <li><a class="nav-link" href="{% url 'admin:index' %}">Admin Panel</a></li>
-              {% endif %}
-              {% url 'account_change_password' as url %}
-              <li {% if url == request.path %}class="active"{% endif %}>
-                <a class="nav-link" href="{{ url }}">Change password</a>
-              </li>
-              {% url 'logout' as url %}
-              <li {% if url == request.path %}class="active"{% endif %}>
-                <a class="nav-link" href="{{ url }}">Logout</a>
-              </li>
-            </ul>
-          </p>
-        {% else %}
-          {% url 'account_signup' as url %}
-          <li {% if url == request.path %}class="active"{% endif %}>
-            <a class="nav-link" href="{{ url }}">Sign up</a>
-          </li>
-          {% url 'account_login' as url %}
-          <li {% if url == request.path %}class="active"{% endif %}>
-            <a class="nav-link" href="{{ url }}">Login</a>
-          </li>
-        {% endif %}
-      </ul>
-      {% endcomment %}
-    </div>
+        {% url 'account_login' as url %}
+        <li class="nav-item {% if url == request.path %}active{% endif %}">
+          <a class="nav-link" href="{{ url }}">Login</a>
+        </li>
+      {% endif %}
+    </ul>
   </div>
-</div>
+</nav>
 
 {% if messages %}
   <div class="messages">
     {% for message in messages %}
-      <div class="message {% if message.tags %}message-{{ message.tags }}{% endif %}" role="alert">
+      <div class="message {% if message.tags %}message-{{ message.tags }}{% endif %} text-center" role="alert">
         <div class="container">{{ message }}</div>
       </div>
     {% endfor %}
   </div>
 {% endif %}
 
+<main role="main" class="container">
+
 <div class="container-fluid">
   {% block content %}{% endblock %}
 </div>
+
+</main><!-- /.container -->
 
 <div class="footer">
   <div class="container">
@@ -103,9 +103,10 @@
   </div>
 </div>
 
-<script src="{% static 'js/jquery-3.4.1.min.js' %}"></script>
-<script src="{% static 'js/bootstrap.min.js' %}"></script>
-<script src="{% static 'js/choose_profile_pic.js' %}"></script>
-
 </body>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+
 </html>

@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^contact/$', ContactView.as_view(), name='contact'),
     url(r'^about-us/$', AboutUsView.as_view(), name='about-us'),
     url(r'', include('subjects.urls')),
+    url(r'^list/', include('lists.urls')),
     url(r'^users/', include('users.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^logout/', Logout.as_view(), name='logout'),

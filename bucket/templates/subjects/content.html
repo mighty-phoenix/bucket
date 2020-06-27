@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {{ content }}
+{% endblock %}
+
+{% block content %}
+<div class="container col-lg-10 col-lg-offset-1 mt40">
+  <div class="row mt40">
+    <div class="col-sm-12">
+      <h1>
+        {{ content }}
+        {% if user.is_superuser %}
+        <span class="right">
+          <a class="btn" href="{% url 'edit_content' content.slug %}"><i class="fas fa-pencil-alt"></i></a>
+          <a class="btn" href="{% url 'delete_content' content.slug %}"><i class="fas fa-trash-alt"></i></a>
+        </span>
+        {% endif %}
+      </h1>
+      <em>{{ content.creator }}</em>
+      <div class="mb40"></div>
+      {% if content.content_url %}
+      <p><a href="{{ content.content_url }}" target="_blank">{{ content.url_text }}</a></p>
+      {% endif %}
+      <p class="text-muted small inline">
+        <!-- Button trigger modal -->
+        <span type="button" data-toggle="modal" data-target="#exampleModalCenter">
+          {% if number_of_bookmarks == 1 %}
+          {{ number_of_bookmarks }} bookmark
+          {% else %}
+          {{ number_of_bookmarks }} bookmarks
+          {% endif %}
+        </span>
+      </p>
+
+      <!-- Modal -->
+      <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+          <div class="modal-content">
+            <div class="modal-body text-center">
+              <ul class="list-unstyled">
+                {% for user in content_bookmarked_by %}
+                <li><a href="{{ user.get_absolute_url }}">{{ user }}</a></li>
+                {% empty %}
+                No bookmarks yet
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% if is_bookmark %}
+      <a class="btn" href="{% url 'bookmark_content' content.slug %}"><i class="fa fa-bookmark"></i></a>
+      {% else %}
+      <a class="btn" href="{% url 'bookmark_content' content.slug %}"><i class="far fa-bookmark"></i></a>
+      {% endif %}
+      {% if is_in_user_list %}
+      <a class="btn" data-toggle="collapse" href="#lists" role="button" aria-expanded="false" aria-controls="lists">
+        <i class="fas fa-plus-square"></i></a>
+      {% else %}
+      <a class="btn" data-toggle="collapse" href="#lists" role="button" aria-expanded="false" aria-controls="lists">
+        <i class="far fa-plus-square"></i></a>
+      {% endif %}
+      <div class="collapse" id="lists">
+        <div class="card border-light col-sm-6 col-md-4 col-lg-3 card-body">
+          <ul class="list-unstyled">
+            {% for list, i in user_lists %}
+            <li>
+              {% if i == 1 %}
+              <a class="btn btn-sm" href="#"><i class="fas fa-check-square"></i></a>
+              {% else %}
+              <a class="btn btn-sm" href="#"><i class="far fa-square"></i></a>
+              {% endif %}
+              {{ list.name }}
+            </li>
+            {% endfor %}
+            <li>
+              <a class="btn btn-sm" href="{% url 'add_list' %}"><i class="fas fa-plus"></i></a>
+              Add list
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

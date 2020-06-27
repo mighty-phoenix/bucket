@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {{ bucketuser }} - Bookmarked Lists
+{% endblock %}
+
+{% block content %}
+<div class="container col-lg-10 offset-lg-1 mt40">
+  <div class="row mt40">
+    <div class="col-sm-12">
+      <h1 class="text-center">Bookmarked Lists</h1>
+      <hr/>
+    </div>
+    <div class="mb40"></div>
+    <div class="col-md-8 offset-md-2">
+      {% for list in bookmarked_lists %}
+      {% include 'lists/snippets/list_card.html' %}
+      {% empty %}
+      <p>No bookmarked lists.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

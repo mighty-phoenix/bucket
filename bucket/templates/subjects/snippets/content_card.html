@@ -1,0 +1,22 @@
+<div class="card border-light mb-3">
+  <div class="card-body left">
+    <h3 class="card-title">
+      <a class="card-link" href="{% url 'view_content' content.slug %}">{{ content.title }}</a>
+    </h3>
+    <p class="card-text"><em>{{ content.creator }}</em></p>
+    {% comment %}
+    {% if content.image %}
+    <img class="card-image img-fluid" src="{{ content.image_thumbnail.url }}" alt="Image" style="width: 100px" />
+    {% endif %}
+    {% if content.description %}
+    <p>{{ content.description | linebreaks | urlize }}</p>
+    {% endif %}
+    {% endcomment %}
+    {% if content.content_url %}
+    <a class="card-link" href="{{ content.content_url }}" target="_blank">{{ content.url_text }}</a>
+    {% endif %}
+    <div class="right">
+      <p><em>{{ content.get_type_display }}</em></p>
+    </div>
+  </div>
+</div>

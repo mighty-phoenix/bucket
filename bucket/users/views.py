@@ -6,6 +6,8 @@ from braces.views import LoginRequiredMixin, MultiplePermissionsRequiredMixin
 
 from users.forms import UserForm
 from users.models import BucketUser
+from subjects.models import Subject, Content
+from lists.models import List
 
 
 class UserView(LoginRequiredMixin, TemplateView):
@@ -18,6 +20,9 @@ class UserView(LoginRequiredMixin, TemplateView):
         username = context['username']
         bucketuser = get_object_or_404(BucketUser, user__username=username)
         context['bucketuser'] = bucketuser
+        context['bookmarks'] = bucketuser.content_bookmark.all()
+        context['user_lists'] = bucketuser.list_set.all()
+        context['bookmarked_lists'] = bucketuser.list_bookmark.all()
         return context
 
 

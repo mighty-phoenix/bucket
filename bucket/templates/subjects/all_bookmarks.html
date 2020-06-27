@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {{ bucketuser }} - Bookmarks
+{% endblock %}
+
+{% block content %}
+<div class="container col-lg-10 col-lg-offset-1 mt40">
+  <div class="row mt40">
+    <div class="col-sm-12">
+      <h1 class="text-center">Bookmarks</h1>
+      <hr/>
+    </div>
+    <div class="mb40"></div>
+    <div class="col-sm-3">
+      <form method="GET" action="{% url 'all_bookmarks' %}">
+        {% include 'subjects/snippets/filter_content.html' %}
+      </form>
+    </div>
+    <div class="col-sm-9">
+      {% for content in bookmark_list %}
+      {% include 'subjects/snippets/content_card.html' %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

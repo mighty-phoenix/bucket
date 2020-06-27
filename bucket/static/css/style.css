@@ -1,9 +1,17 @@
 /*!
  * Custom CSS
  */
-body { padding-top: 80px; }
+body { padding-top: 50px; }
 @media screen and (max-width: 768px) {
-    body { padding-top: 0px; }
+    body { padding-top: 50px; }
+}
+
+.right {
+    float: right;
+}
+
+.left {
+    float: left;
 }
 
 /* Reusable CSS
@@ -14,6 +22,14 @@ body { padding-top: 80px; }
 
 .mt20 {
   margin-top: 20px;
+}
+
+.mt15 {
+  margin-top: 15px;
+}
+
+.mt10 {
+  margin-top: 10px;
 }
 
 .mb40 {
@@ -161,6 +177,7 @@ body > .container-fluid {
   font-family: Monserrat;
 }
 
+/*
 .btn {
   background-color: #005c88 ;
   border-color: #005c88;
@@ -170,8 +187,9 @@ body > .container-fluid {
   background-color: #e2e2e2;
   border-color: #dadada;
   color: #555555;
-  padding: 8px 12px 7px;  
+  padding: 8px 12px 7px;
 }
+*/
 
 @media screen and (max-width: 991px) {
   .featurette img.img-responsive {
@@ -288,22 +306,17 @@ span {
 
 /* User Profile
 -------------------------------------------------- */
+.profile-card-group {
+  overflow-x: scroll;
+}
+
 .profile-row {
-  font-size: 16px;
-}
-
-.profile-element {
-  display: inline-block;
-  margin-left: 15px;
-}
-
-.condensed {
-  margin-top: 0;
+  flex-wrap: nowrap;
 }
 
 .profile-pic {
   margin-bottom: 10px;
-  width: 50%;
+  width: 100%;
 }
 
 table a.table-anchor,

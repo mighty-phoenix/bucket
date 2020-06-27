@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {{ subject }}
+{% endblock %}
+
+{% block content %}
+<div class="container col-lg-10 offset-lg-1 mt40">
+  <div class="row mt40">
+    <div class="col-sm-12">
+      <h1 class="text-center">{{ subject }}</h1>
+      <hr/>
+    </div>
+    <div class="col-sm-3">
+      <form method="GET" action="{% url 'view_subject_page' subject.slug %}">
+        {% include 'subjects/snippets/filter_content.html' %}
+      </form>
+    </div>
+    <div class="col-sm-9">
+      {% for content in subject_content %}
+      {% include 'subjects/snippets/content_card.html' %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
