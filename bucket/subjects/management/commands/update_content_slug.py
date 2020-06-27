@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.utils.text import slugify
 from subjects.models import Content
 
 
@@ -8,5 +9,5 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         all = Content.objects.all()
         for content in all:
-            content.slug = content.title.replace(" ","_")
+            content.slug = slugify(content.title)
             content.save()
