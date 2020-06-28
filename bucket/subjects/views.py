@@ -12,7 +12,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 
 from subjects.constants import CONTENT_TYPES
-from subjects.utils import filter_content_queryset
+from subjects.utils import filter_and_search_queryset
 from subjects.forms import *
 from subjects.models import Subject, Content
 from users.models import BucketUser
@@ -40,7 +40,7 @@ class SubjectPageView(ListView):
         self.subject = get_object_or_404(Subject, slug=self.kwargs['slug'])
         context['subject'] = self.subject
         qs = Content.objects.filter(subject=self.subject)
-        context['subject_content'] = filter_content_queryset(qs,self.request)
+        context['subject_content'] = filter_and_search_queryset(qs,self.request)
         return context
 
 
@@ -52,7 +52,7 @@ class ContentsPage(ListView):
     def get_context_data(self, **kwargs):
         context = super(ContentsPage, self).get_context_data(**kwargs)
         qs = Content.objects.order_by('title')
-        context['contents'] = filter_content_queryset(qs,self.request)
+        context['contents'] = filter_and_search_queryset(qs,self.request)
         return context
 
 
@@ -151,5 +151,5 @@ class AllBookmarksView(LoginRequiredMixin, ListView):
         bucketuser = get_object_or_404(BucketUser, user=user)
         context['bucketuser'] = bucketuser
         qs = bucketuser.content_bookmark.all().order_by('title')
-        context['bookmark_list'] = filter_content_queryset(qs,self.request)
+        context['bookmark_list'] = filter_and_search_queryset(qs,self.request)
         return context

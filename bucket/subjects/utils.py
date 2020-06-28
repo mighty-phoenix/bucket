@@ -1,6 +1,6 @@
 # helper functions
 
-def filter_content_queryset(qs, request):
+def filter_and_search_queryset(qs, request):
     books = request.GET.get('books')
     movies = request.GET.get('movies')
     documentaries = request.GET.get('documentaries')
@@ -24,4 +24,7 @@ def filter_content_queryset(qs, request):
             qs = qs.exclude(type='social_media')
         if others == None:
             qs = qs.exclude(type='other')
+    search_query = request.GET.get('search')
+    if search_query != '' and search_query is not None:
+        qs = qs.filter(title__icontains=search_query).order_by('title')
     return qs
