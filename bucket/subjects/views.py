@@ -34,13 +34,18 @@ class SubjectPageView(ListView):
        with that subject."""
     model = Content
     template_name = "subjects/subject_page.html"
+    context_object_name = 'subject_content'
+    paginate_by = 10
+
+    def get_queryset(self, *args, **kwargs):
+        self.subject = get_object_or_404(Subject, slug=self.kwargs['slug'])
+        qs = Content.objects.filter(subject=self.subject).order_by('title')
+        subject_content = filter_and_search_queryset(qs,self.request)
+        return subject_content
 
     def get_context_data(self, **kwargs):
         context = super(SubjectPageView, self).get_context_data(**kwargs)
-        self.subject = get_object_or_404(Subject, slug=self.kwargs['slug'])
         context['subject'] = self.subject
-        qs = Content.objects.filter(subject=self.subject)
-        context['subject_content'] = filter_and_search_queryset(qs,self.request)
         return context
 
 
@@ -48,12 +53,13 @@ class ContentsPage(ListView):
     """List all content"""
     model = Content
     template_name = "subjects/contents_page.html"
+    context_object_name = 'contents'
+    paginate_by = 10
 
-    def get_context_data(self, **kwargs):
-        context = super(ContentsPage, self).get_context_data(**kwargs)
+    def get_queryset(self, *args, **kwargs):
         qs = Content.objects.order_by('title')
-        context['contents'] = filter_and_search_queryset(qs,self.request)
-        return context
+        contents = filter_and_search_queryset(qs,self.request)
+        return contents
 
 
 class ContentView(DetailView):
@@ -143,13 +149,11 @@ class AllBookmarksView(LoginRequiredMixin, ListView):
     """View list of all bookmarks"""
     model = Content
     template_name = "subjects/all_bookmarks.html"
+    context_object_name = 'bookmark_list'
     paginate_by = 10
 
-    def get_context_data(self, **kwargs):
-        context = super(AllBookmarksView, self).get_context_data(**kwargs)
-        user = self.request.user
-        bucketuser = get_object_or_404(BucketUser, user=user)
-        context['bucketuser'] = bucketuser
+    def get_queryset(self, *args, **kwargs):
+        bucketuser = get_object_or_404(BucketUser, user=self.request.user)
         qs = bucketuser.content_bookmark.all().order_by('title')
-        context['bookmark_list'] = filter_and_search_queryset(qs,self.request)
-        return context
+        bookmark_list = filter_and_search_queryset(qs,self.request)
+        return bookmark_list

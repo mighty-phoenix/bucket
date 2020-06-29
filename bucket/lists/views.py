@@ -19,11 +19,12 @@ class ListsPage(ListView):
     """Show all lists"""
     model = List
     template_name = "lists/lists_page.html"
+    context_object_name = 'lists'
+    paginate_by = 10
 
-    def get_context_data(self, **kwargs):
-        context = super(ListsPage, self).get_context_data(**kwargs)
-        context['lists'] = List.objects.order_by('name')
-        return context
+    def get_queryset(self, *args, **kwargs):
+        lists = List.objects.all().order_by('name')
+        return lists
 
 
 class ViewList(DetailView):
@@ -119,28 +120,26 @@ class AllUserListsView(LoginRequiredMixin, ListView):
     """View all lists created by the user."""
     model = List
     template_name = "lists/all_user_lists.html"
+    context_object_name = 'user_lists'
     paginate_by = 10
 
-    def get_context_data(self, **kwargs):
-        context = super(AllUserListsView, self).get_context_data(**kwargs)
+    def get_queryset(self, *args, **kwargs):
         bucketuser = get_object_or_404(BucketUser, user=self.request.user)
-        context['bucketuser'] = bucketuser
-        context['user_lists'] = bucketuser.list_set.all()
-        return context
+        user_lists = bucketuser.list_set.all().order_by('name')
+        return user_lists
 
 
 class AllBookmarkedListsView(LoginRequiredMixin, ListView):
     """View all lists bookmarked by the user."""
     model = List
     template_name = "lists/all_bookmarked_lists.html"
+    context_object_name = 'bookmarked_lists'
     paginate_by = 10
 
-    def get_context_data(self, **kwargs):
-        context = super(AllBookmarkedListsView, self).get_context_data(**kwargs)
+    def get_queryset(self, *args, **kwargs):
         bucketuser = get_object_or_404(BucketUser, user=self.request.user)
-        context['bucketuser'] = bucketuser
-        context['bookmarked_lists'] = bucketuser.list_bookmark.all()
-        return context
+        user_lists = bucketuser.list_bookmark.all().order_by('name')
+        return user_lists
 
 
 class AddToListView(LoginRequiredMixin, RedirectView):
