@@ -28,7 +28,7 @@ class AddContentForm(ModelFormWithHelper):
     """Form to add new Content."""
     class Meta:
         model = Content
-        fields = ('title', 'subject', 'type', 'creator', 'content_url')
+        fields = ('title', 'type', 'creator', 'content_url')
         helper_class = SubmitCancelFormHelper
         helper_cancel_href = "{% url 'contents_page' %}"
 
@@ -37,6 +37,6 @@ class EditContentForm(ModelFormWithHelper):
     """Form to edit details of a Content."""
     class Meta:
         model = Content
-        fields = ('title', 'subject', 'type', 'creator', 'content_url')
+        fields = ('title', 'type', 'creator', 'content_url')
         helper_class = SubmitCancelFormHelper
         helper_cancel_href = "{% url 'view_content' content.slug %}"
