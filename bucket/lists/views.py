@@ -20,7 +20,7 @@ class ListsPage(ListView):
     model = List
     template_name = "lists/lists_page.html"
     context_object_name = 'lists'
-    paginate_by = 10
+    #paginate_by = 10
 
     def get_queryset(self, *args, **kwargs):
         lists = List.objects.all().order_by('name')

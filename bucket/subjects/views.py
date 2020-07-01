@@ -54,7 +54,7 @@ class ContentsPage(ListView):
     model = Content
     template_name = "subjects/contents_page.html"
     context_object_name = 'contents'
-    paginate_by = 10
+    #paginate_by = 10
 
     def get_queryset(self, *args, **kwargs):
         qs = Content.objects.order_by('title')
