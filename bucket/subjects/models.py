@@ -31,7 +31,7 @@ class Content(models.Model):
     subject = models.ManyToManyField(Subject, blank=True, related_name='content')
     title = models.CharField(max_length=255, unique=True, verbose_name="Title")
     slug = models.SlugField(max_length=150, unique=True, editable=False, verbose_name="Slug")
-    type = models.CharField(max_length=20,
+    type = models.CharField(max_length=150,
                             choices=CONTENT_TYPES,
                             default='other',
                             verbose_name="Type")

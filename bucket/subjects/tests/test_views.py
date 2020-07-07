@@ -1,23 +1,26 @@
 from django.contrib.auth.models import User
+from django.contrib import auth
 from django.urls import reverse
 from django.test import TestCase, Client
 
+from subjects.constants import CONTENT_TYPES
 from subjects.models import Subject, Content
 from lists.models import List
+from users.models import BucketUser
 
 
-class BaseTestCase(TestCase):
+class BaseTestCase(object):
     def setUp(self):
-        self.user = User.objects.create(username='foo', password='foobar')
-        self.bucket_user = BucketUser.objects.get(user=self.user)
+        self.user = User.objects.create_user(username='foo', password='foobar')
+        self.bucketuser = BucketUser.objects.get(user=self.user)
         self.subject = Subject.objects.create(name="Test Subject",
                                               description="This is a test subject.")
-        self.content = Content.objects.create(subject=self.subject,
-                                              title="Test Content",
-                                              type=CONTENT_TYPES[2],
+        self.content = Content.objects.create(title="Test Content",
+                                              type=CONTENT_TYPES[2][0],
                                               creator="Foo Bar",
-                                              description="Test content description, this is.",
-                                              bookmarked_by=self.bucket_user)
+                                              description="Test content description, this is.")
+        self.content.subject.add(self.subject)
+        self.content.bookmarked_by.add(self.bucketuser)
 
 
 class SubjectsListTestCase(BaseTestCase, TestCase):
@@ -48,12 +51,11 @@ class SubjectsListTestCase(BaseTestCase, TestCase):
 class SubjectsPageViewTestCase(BaseTestCase, TestCase):
     def test_view_subjects_page(self):
         """
-        Test Subject view for
-        * correct http response and template
+        Test Subject view for correct http response
         * correct context data and object list
         * response for non existent url
         """
-        url = reverse('view_subject', kwargs={'slug': 'test-subject'})
+        url = reverse('view_subject_page', kwargs={'slug': 'test-subject'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'subjects/subject_page.html')
@@ -61,16 +63,17 @@ class SubjectsPageViewTestCase(BaseTestCase, TestCase):
         self.assertContains(response, "Test Content")
         self.assertEqual(len(response.context['subject_content']), 1)
 
-        self.content2 = Content.objects.create(subject=self.subject,
-                                               title="Content 2",
-                                               type=CONTENT_TYPES[0])
+        self.content2 = Content.objects.create(title="Content 2",
+                                               type=CONTENT_TYPES[0][0])
+        self.content2.subject.add(self.subject)
         self.content3 = Content.objects.create(title="Content 3",
-                                               type=CONTENT_TYPES[3])
+                                               type=CONTENT_TYPES[3][0])
+        response = self.client.get(url)
         self.assertContains(response, "Content 2")
         self.assertNotContains(response, "Content 3")
         self.assertEqual(len(response.context['subject_content']), 2)
 
-        nonexistent_url = reverse('view_subject', kwargs={'slug': 'bar'})
+        nonexistent_url = reverse('view_subject_page', kwargs={'slug': 'bar'})
         response = self.client.get(nonexistent_url)
         self.assertEqual(response.status_code, 404)
 
@@ -78,8 +81,7 @@ class SubjectsPageViewTestCase(BaseTestCase, TestCase):
 class ContentsPageTestCase(BaseTestCase, TestCase):
     def test_view_contents_page(self):
         """
-        Test Contents page view for
-        * correct http response and template
+        Test Contents page view for correct http response
         * correct object list
         * response for non existent url
         """
@@ -91,7 +93,8 @@ class ContentsPageTestCase(BaseTestCase, TestCase):
         self.assertContains(response, "Test Content")
         self.assertEqual(len(response.context['contents']), 1)
         self.content2 = Content.objects.create(title="Content 2",
-                                               type=CONTENT_TYPES[3])
+                                               type=CONTENT_TYPES[3][0])
+        response = self.client.get(url)
         self.assertContains(response, "Content 2")
         self.assertEqual(len(response.context['contents']), 2)
 
@@ -99,8 +102,7 @@ class ContentsPageTestCase(BaseTestCase, TestCase):
 class ContentViewTestCase(BaseTestCase, TestCase):
     def test_view_content_view(self):
         """
-        Test Content view for
-        * correct http response and template
+        Test Content view for correct http response
         * correct context data and object list
         * response for non existent url
 
@@ -118,48 +120,54 @@ class ContentViewTestCase(BaseTestCase, TestCase):
 
         # test view while logged out
         self.assertEqual(response.context['is_bookmark'], False)
-        self.assertEqual(response.context['content_bookmarked_by'],
-                         [self.bucket_user])
+        self.assertEqual(list(response.context['content_bookmarked_by']),
+                         [self.bucketuser])
         self.assertEqual(response.context['number_of_bookmarks'], 1)
-        self.assertEqual(response.context['user_lists'], [[],[]])
+        self.assertEqual(response.context['user_lists'], [])
         self.assertEqual(response.context['is_in_user_list'], False)
 
         # login user
         self.client.login(username='foo', password='foobar')
 
         # test view with user bookmark
+        response = self.client.get(url)
         self.assertEqual(response.context['is_bookmark'], True)
-        self.assertEqual(response.context['content_bookmarked_by'],
-                         [self.bucket_user])
+        self.assertEqual(list(response.context['content_bookmarked_by']),
+                         [self.bucketuser])
         self.assertEqual(response.context['number_of_bookmarks'], 1)
 
         self.user2 = User.objects.create(username='bar', password='foobar')
-        self.bucket_user2 = BucketUser.objects.get(user=self.user2)
-        self.content.bookmarked_by.add(self.bucket_user2)
-        self.assertEqual(response.context['content_bookmarked_by'],
-                         [self.bucket_user, self.bucket_user2])
+        self.bucketuser2 = BucketUser.objects.get(user=self.user2)
+        self.content.bookmarked_by.add(self.bucketuser2)
+        response = self.client.get(url)
+        self.assertEqual(list(response.context['content_bookmarked_by']),
+                         [self.bucketuser, self.bucketuser2])
         self.assertEqual(response.context['number_of_bookmarks'], 2)
 
         # test view without user bookmark
-        self.content.bookmarked_by.remove(self.bucket_user)
+        self.content.bookmarked_by.remove(self.bucketuser)
+        response = self.client.get(url)
         self.assertEqual(response.context['is_bookmark'], False)
-        self.content.bookmarked_by.remove(self.bucket_user2)
-        self.assertEqual(response.context['content_bookmarked_by'], None)
+        self.content.bookmarked_by.remove(self.bucketuser2)
+        response = self.client.get(url)
+        self.assertEqual(list(response.context['content_bookmarked_by']), [])
         self.assertEqual(response.context['number_of_bookmarks'], 0)
 
         # test view with no user list, while logged in
-        self.assertEqual(response.context['user_lists'], [[],[]])
+        self.assertEqual(response.context['user_lists'], [])
         self.assertEqual(response.context['is_in_user_list'], False)
 
         # test view with user list which does not have the content
-        self.list = List.objects.create(user=self.bucket_user,
+        self.list = List.objects.create(user=self.bucketuser,
                                         name="Test List")
-        self.assertEqual(response.context['user_lists'], [[self.list],[0]])
+        response = self.client.get(url)
+        self.assertEqual(response.context['user_lists'], [(self.list, 0)])
         self.assertEqual(response.context['is_in_user_list'], False)
 
         # test view with user list which has the content
         self.list.content.add(self.content)
-        self.assertEqual(response.context['user_lists'], [[self.list],[1]])
+        response = self.client.get(url)
+        self.assertEqual(response.context['user_lists'], [(self.list, 1)])
         self.assertEqual(response.context['is_in_user_list'], True)
 
         # test for nonexistent url
@@ -201,7 +209,7 @@ class AddContentViewTestCase(BaseTestCase, TestCase):
         self.assertEqual(response.status_code, 403)
         # test response while logged in
         self.client.login(username='foo', password='foobar')
-        data = {'title': 'FooTest', 'type': CONTENT_TYPES[4],
+        data = {'title': 'FooTest', 'type': CONTENT_TYPES[4][0],
                 'creator': 'bar baz', 'content_url': 'www.bartest.com/foo/baz'}
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 302)
@@ -217,7 +225,7 @@ class EditContentViewTestCase(BaseTestCase, TestCase):
         response = self.client.get(wrong_url)
         self.assertEqual(response.status_code, 403)
         # test response while logged out
-        url = reverse("edit_meetup", kwargs={'slug': 'test-content'})
+        url = reverse("edit_content", kwargs={'slug': 'test-content'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 403)
         # test response while logged in
@@ -245,23 +253,23 @@ class EditContentViewTestCase(BaseTestCase, TestCase):
         response = self.client.post(wrong_url)
         self.assertEqual(response.status_code, 403)
         # test response while logged out
-        url = reverse("edit_meetup", kwargs={'slug': 'test-content'})
+        url = reverse("edit_content", kwargs={'slug': 'test-content'})
         response = self.client.post(url)
         self.assertEqual(response.status_code, 403)
         # test response while logged in
         self.client.login(username='foo', password='foobar')
-        data = {'title': 'FooTest', 'type': CONTENT_TYPES[3],
+        data = {'title': 'FooTest', 'type': CONTENT_TYPES[3][0],
                 'creator': 'bar baz', 'content_url': 'www.bartest.com/foo/baz'}
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.endswith('/content/footest/'))
+        self.assertTrue(response.url.endswith('/content/footest'))
 
 
 class DeleteContentViewTestCase(BaseTestCase, TestCase):
     def setUp(self):
         super(DeleteContentViewTestCase, self).setUp()
         self.content2 = Content.objects.create(title="Foo Baz",
-                                               type=CONTENT_TYPES[3])
+                                               type=CONTENT_TYPES[3][0])
         #self.client = Client()
 
     def test_get_delete_content_view(self):
@@ -308,12 +316,12 @@ class BookmarkContentViewTestCase(BaseTestCase, TestCase):
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.endswith('content/test_content'))
-        self.assertEqual(self.content.bookmarked_by.all(), [])
+        self.assertTrue(response.url.endswith('content/test-content'))
+        self.assertEqual(list(self.content.bookmarked_by.all()), [])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.endswith('content/test_content'))
-        self.assertEqual(self.content.bookmarked_by.all(), [self.bucket_user])
+        self.assertTrue(response.url.endswith('content/test-content'))
+        self.assertEqual(list(self.content.bookmarked_by.all()), [self.bucketuser])
 
         # Test for non existent url
         nonexistent_url = reverse("bookmark_content", kwargs={'slug': 'bazbaz'})
@@ -343,10 +351,12 @@ class AllBookmarksViewTestCase(BaseTestCase, TestCase):
         self.assertContains(response, "Test Content")
         self.assertEqual(len(response.context['bookmark_list']), 1)
         self.content2 = Content.objects.create(title="Content 2",
-                                               type=CONTENT_TYPES[3])
-        self.content2.bookmarked_by.add(self.bucket_user)
+                                               type=CONTENT_TYPES[3][0])
+        self.content2.bookmarked_by.add(self.bucketuser)
+        response = self.client.get(url)
         self.assertContains(response, "Content 2")
         self.assertEqual(len(response.context['bookmark_list']), 2)
-        self.content.bookmarked_by.remove(self.bucket_user)
-        self.content2.bookmarked_by.remove(self.bucket_user)
+        self.content.bookmarked_by.remove(self.bucketuser)
+        self.content2.bookmarked_by.remove(self.bucketuser)
+        response = self.client.get(url)
         self.assertEqual(len(response.context['bookmark_list']), 0)

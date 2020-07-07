@@ -88,7 +88,7 @@ class ContentView(DetailView):
                     in_list.append(1)
                 else:
                     in_list.append(0)
-            context['user_lists'] = zip(user_lists, in_list)
+            context['user_lists'] = list(zip(user_lists, in_list))
             if 1 in in_list:
                 is_in_user_list = True
         context['is_bookmark'] = is_bookmark
@@ -101,6 +101,7 @@ class AddContentView(LoginRequiredMixin, CreateView):
     model = Content
     template_name = "subjects/add_content.html"
     form_class = AddContentForm
+    raise_exception = True
 
     def get_success_url(self):
         """Redirect to content page."""
@@ -113,6 +114,7 @@ class EditContentView(LoginRequiredMixin, UpdateView):
     model = Content
     template_name = "subjects/edit_content.html"
     form_class = EditContentForm
+    raise_exception = True
 
     def get_success_url(self):
         """Redirect to content page."""
@@ -124,6 +126,7 @@ class DeleteContentView(LoginRequiredMixin, DeleteView):
     """Delete a content."""
     model = Content
     template_name = "subjects/confirm_delete_content.html"
+    raise_exception = True
 
     def get_success_url(self):
         """Redirect to user profile in case of successful deletion"""
@@ -136,6 +139,7 @@ class BookmarkContentView(LoginRequiredMixin, RedirectView):
     """Bookmark content"""
     model = Content
     template_name = "subjects/bookmark.html"
+    raise_exception = True
 
     def get_redirect_url(self, *args, **kwargs):
         user = self.request.user
@@ -153,6 +157,7 @@ class AllBookmarksView(LoginRequiredMixin, ListView):
     model = Content
     template_name = "subjects/all_bookmarks.html"
     context_object_name = 'bookmark_list'
+    raise_exception = True
     paginate_by = 10
 
     def get_queryset(self, *args, **kwargs):
