@@ -89,7 +89,10 @@ class ContentView(DetailView):
                 else:
                     in_list.append(0)
             context['user_lists'] = zip(user_lists, in_list)
+            if 1 in in_list:
+                is_in_user_list = True
         context['is_bookmark'] = is_bookmark
+        context['is_in_user_list'] = is_in_user_list
         return context
 
 

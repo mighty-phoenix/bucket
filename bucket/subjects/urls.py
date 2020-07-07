@@ -3,7 +3,7 @@ from django.conf.urls import include, url
 from subjects.views import *
 
 urlpatterns = [
-    #url(r'^$', SubjectsList.as_view(), name='list_subjects'),
+    url(r'^subjects/$', SubjectsList.as_view(), name='list_subjects'),
     url(r'^(?P<slug>[\w-]+)$', SubjectPageView.as_view(), name='view_subject_page'),
     url(r'^$', ContentsPage.as_view(), name='contents_page'),
     url(r'^content/add$', AddContentView.as_view(), name='add_content'),
