@@ -15,10 +15,12 @@
         {% else %}
         <a class="btn" href="{% url 'bookmark_list' list.slug %}"><i class="far fa-bookmark"></i></a>
         {% endif %}
+        {% if bucketuser == list.user %}
         <span class="right">
           <a class="btn" href="{% url 'edit_list' list.slug %}"><i class="fas fa-pencil-alt"></i></a>
           <a class="btn" href="{% url 'delete_list' list.slug %}"><i class="fas fa-trash-alt"></i></a>
         </span>
+        {% endif %}
       </h1>
       <hr/>
       <p>{{ list.description | linebreaks}}</p>
@@ -50,7 +52,7 @@
           </div>
         </div>
       </div>
-      
+
       {% for content in list_content %}
       {% include 'subjects/snippets/content_card.html' %}
       {% endfor %}

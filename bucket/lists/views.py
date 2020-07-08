@@ -5,11 +5,11 @@ from django.views.generic.base import RedirectView
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from braces.views import LoginRequiredMixin
+from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib import messages
 from django.contrib.auth.models import User
 
-from lists.forms import *
+from lists.forms import AddListForm, EditListForm
 from lists.models import List
 from subjects.models import Content
 from users.models import BucketUser
@@ -45,6 +45,7 @@ class ViewList(DetailView):
         if self.request.user.is_authenticated:
             user = self.request.user
             bucketuser = get_object_or_404(BucketUser, user=user)
+            context['bucketuser'] = bucketuser
             if self.object.bookmarked_by.filter(id=bucketuser.id).exists():
                 is_bookmark = True
         context['is_bookmark'] = is_bookmark
@@ -69,11 +70,12 @@ class AddListView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class EditListView(LoginRequiredMixin, UpdateView):
+class EditListView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """Update a list."""
     model = List
     template_name = "lists/edit_list.html"
     form_class = EditListForm
+    raise_exception = True
 
     def get_success_url(self):
         """Redirect to list page."""
@@ -87,17 +89,29 @@ class EditListView(LoginRequiredMixin, UpdateView):
         context['user'] = bucketuser
         return context
 
+    def check_permissions(self, request):
+        """Check if the request user has the permission to edit the list."""
+        self.list = get_object_or_404(List, slug=self.kwargs['slug'])
+        bucketuser = get_object_or_404(BucketUser, user=request.user)
+        return bucketuser == self.list.user
 
-class DeleteListView(LoginRequiredMixin, DeleteView):
+
+class DeleteListView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     """Delete a list."""
     model = List
     template_name = "lists/confirm_delete_list.html"
+    raise_exception = True
 
     def get_success_url(self):
         """Redirect to user profile in case of successful deletion"""
-        bucketuser = get_object_or_404(BucketUser, user=self.request.user)
         messages.add_message(self.request, messages.WARNING, "List deleted")
-        return bucketuser.get_absolute_url()
+        return reverse("all_user_lists")
+
+    def check_permissions(self, request):
+        """Check if the request user has the permission to delete the list."""
+        self.list = get_object_or_404(List, slug=self.kwargs['slug'])
+        bucketuser = get_object_or_404(BucketUser, user=request.user)
+        return bucketuser == self.list.user
 
 
 class BookmarkListView(LoginRequiredMixin, RedirectView):

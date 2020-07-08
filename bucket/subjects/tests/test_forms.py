@@ -6,7 +6,7 @@ from subjects.forms import (AddSubjectForm, EditSubjectForm,
 from subjects.models import Subject, Content
 
 
-class BaseTestCase(TestCase):
+class BaseTestCase(object):
     def setUp(self):
         self.subject = Subject.objects.create(name="Test Subject",
                                               description="This is a test subject.")

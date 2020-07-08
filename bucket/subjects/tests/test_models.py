@@ -5,9 +5,9 @@ from subjects.constants import CONTENT_TYPES
 from subjects.models import Subject, Content
 from users.models import BucketUser
 
-class BaseTestCase(TestCase):
+class BaseTestCase(object):
     def setUp(self):
-        self.user = User.objects.create(username='foo', password='foobar')
+        self.user = User.objects.create_user(username='foo', password='foobar')
         self.bucketuser = BucketUser.objects.get(user=self.user)
         self.subject = Subject.objects.create(name="Test Subject",
                                               description="This is a test subject.")

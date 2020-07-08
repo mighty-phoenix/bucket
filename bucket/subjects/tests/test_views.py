@@ -182,7 +182,7 @@ class AddContentViewTestCase(BaseTestCase, TestCase):
         url = reverse('add_content')
         # test response while logged out
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 302)
         # test response while logged in
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url)
@@ -206,7 +206,7 @@ class AddContentViewTestCase(BaseTestCase, TestCase):
         url = reverse("add_content")
         # test response while logged out
         response = self.client.post(url, data={})
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 302)
         # test response while logged in
         self.client.login(username='foo', password='foobar')
         data = {'title': 'FooTest', 'type': CONTENT_TYPES[4][0],
@@ -223,11 +223,11 @@ class EditContentViewTestCase(BaseTestCase, TestCase):
         # test for wrong url
         wrong_url = reverse("edit_content", kwargs={'slug': 'test-contentss'})
         response = self.client.get(wrong_url)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 302)
         # test response while logged out
         url = reverse("edit_content", kwargs={'slug': 'test-content'})
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 302)
         # test response while logged in
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url)
@@ -251,11 +251,11 @@ class EditContentViewTestCase(BaseTestCase, TestCase):
         # test for wrong url
         wrong_url = reverse("edit_content", kwargs={'slug': 'test-contentss'})
         response = self.client.post(wrong_url)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 302)
         # test response while logged out
         url = reverse("edit_content", kwargs={'slug': 'test-content'})
         response = self.client.post(url)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 302)
         # test response while logged in
         self.client.login(username='foo', password='foobar')
         data = {'title': 'FooTest', 'type': CONTENT_TYPES[3][0],
@@ -270,14 +270,13 @@ class DeleteContentViewTestCase(BaseTestCase, TestCase):
         super(DeleteContentViewTestCase, self).setUp()
         self.content2 = Content.objects.create(title="Foo Baz",
                                                type=CONTENT_TYPES[3][0])
-        #self.client = Client()
 
     def test_get_delete_content_view(self):
         """Test GET to confirm deletion of content"""
         url = reverse("delete_content", kwargs={'slug': 'foo-baz'})
         # test response while logged out
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 302)
         # test response while logged in
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url)
@@ -289,7 +288,7 @@ class DeleteContentViewTestCase(BaseTestCase, TestCase):
         url = reverse("delete_content", kwargs={'slug': 'foo-baz'})
         # test response while logged out
         response = self.client.post(url)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 302)
         # test response while logged in
         self.client.login(username='foo', password='foobar')
         response = self.client.post(url)
@@ -311,7 +310,7 @@ class BookmarkContentViewTestCase(BaseTestCase, TestCase):
         url = reverse("bookmark_content", kwargs={'slug': 'test-content'})
         # test response while logged out
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 302)
         # test response while logged in
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url)
@@ -340,7 +339,7 @@ class AllBookmarksViewTestCase(BaseTestCase, TestCase):
         url = reverse('all_bookmarks')
         # test response while logged out
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 302)
         # test response while logged out
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url)
