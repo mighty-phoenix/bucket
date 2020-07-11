@@ -10,10 +10,12 @@ from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from braces.views import FormValidMessageMixin, FormInvalidMessageMixin
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django_filters.views import FilterView
 
 from subjects.constants import CONTENT_TYPES
-from subjects.utils import filter_and_search_queryset
-from subjects.forms import *
+from subjects.forms import (AddSubjectForm, EditSubjectForm,
+                            AddContentForm, EditContentForm)
+from subjects.filters import ContentFilter, ContentBookmarkFilter
 from subjects.models import Subject, Content
 from users.models import BucketUser
 
@@ -31,7 +33,10 @@ class SubjectsList(ListView):
 
 class SubjectPageView(ListView):
     """View a subject's page, which contains a list of all content associated
-       with that subject."""
+       with that subject.
+
+       ## TODO: Change filtering to django-filters
+    """
     model = Content
     template_name = "subjects/subject_page.html"
     context_object_name = 'subject_content'
@@ -40,7 +45,7 @@ class SubjectPageView(ListView):
     def get_queryset(self, *args, **kwargs):
         self.subject = get_object_or_404(Subject, slug=self.kwargs['slug'])
         qs = Content.objects.filter(subject=self.subject).order_by('title')
-        subject_content = filter_and_search_queryset(qs,self.request)
+        #subject_content = filter_and_search_queryset(qs,self.request)
         return subject_content
 
     def get_context_data(self, **kwargs):
@@ -49,17 +54,12 @@ class SubjectPageView(ListView):
         return context
 
 
-class ContentsPage(ListView):
+class ContentsPage(FilterView):
     """List all content"""
     model = Content
     template_name = "subjects/contents_page.html"
-    context_object_name = 'contents'
+    filterset_class = ContentFilter
     #paginate_by = 10
-
-    def get_queryset(self, *args, **kwargs):
-        qs = Content.objects.order_by('title')
-        contents = filter_and_search_queryset(qs,self.request)
-        return contents
 
 
 class ContentView(DetailView):
@@ -148,15 +148,9 @@ class BookmarkContentView(LoginRequiredMixin, RedirectView):
         return reverse('view_content', kwargs={'slug': content.slug})
 
 
-class AllBookmarksView(LoginRequiredMixin, ListView):
+class AllBookmarksView(LoginRequiredMixin, FilterView):
     """View list of all bookmarks"""
     model = Content
     template_name = "subjects/all_bookmarks.html"
-    context_object_name = 'bookmark_list'
-    paginate_by = 10
-
-    def get_queryset(self, *args, **kwargs):
-        bucketuser = get_object_or_404(BucketUser, user=self.request.user)
-        qs = bucketuser.content_bookmark.all().order_by('title')
-        bookmark_list = filter_and_search_queryset(qs,self.request)
-        return bookmark_list
+    filterset_class = ContentBookmarkFilter
+    #paginate_by = 10

@@ -1,18 +1,19 @@
 {% extends "base.html" %}
 
-
+{% load crispy_forms_tags %}
 {% block content %}
 <div class="container col-lg-10 offset-lg-1 mt40">
   <div class="row mt40">
     <div class="col-sm-3">
-      <form method="GET" action="{% url 'contents_page' %}">
-        {% include 'subjects/snippets/filter_content.html' %}
+      <form method="GET">
+        {{ filter.form | crispy }}
+        <button type="submit" class="btn btn-primary">Search</button>
       </form>
       <div class="mt20"></div>
       <a href="{% url 'add_content' %}" role="button" class="btn"><i class="fas fa-plus"></i>&nbsp; Add new content</a>
     </div>
     <div class="col-sm-9">
-      {% for content in contents %}
+      {% for content in filter.qs %}
       {% include 'subjects/snippets/content_card.html' %}
       {% endfor %}
     </div>
