@@ -20,6 +20,9 @@ class List(models.Model):
                                            related_name='list_bookmark',
                                            verbose_name='Bookmarked By')
 
+    class Meta:
+        ordering = ['name']
+        
     def __str__(self):
         return self.name
 

@@ -51,6 +51,9 @@ class Content(models.Model):
                                            related_name='content_bookmark',
                                            verbose_name='Bookmarked By')
 
+    class Meta:
+        ordering = ['title']
+
     def __str__(self):
         return self.title
 
