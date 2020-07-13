@@ -64,8 +64,9 @@ class ContentsPage(FilterView):
 
     def get_context_data(self, **kwargs):
         context = super(FilterView, self).get_context_data(**kwargs)
-        user = self.request.user
-        context['bucketuser'] = get_object_or_404(BucketUser, user=user)
+        if self.request.user.is_authenticated:
+            user = self.request.user
+            context['bucketuser'] = get_object_or_404(BucketUser, user=user)
         return context
 
 
@@ -76,9 +77,10 @@ class ContentView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ContentView, self).get_context_data(**kwargs)
-        user = self.request.user
-        bucketuser = get_object_or_404(BucketUser, user=user)
-        context['bucketuser'] = bucketuser
+        if self.request.user.is_authenticated:
+            user = self.request.user
+            bucketuser = get_object_or_404(BucketUser, user=user)
+            context['bucketuser'] = bucketuser
         context['content'] = self.object
         context['number_of_bookmarks'] = self.object.bookmarked_by.all().count()
         return context
