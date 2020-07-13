@@ -5,8 +5,8 @@
       {% url 'contents_page' as url %}
       {% if url == request.path %}
       <div class="right">
-        <a class="btn btn-sm" href="{% url 'bookmark_content' content.slug %}"><i class="far fa-bookmark"></i></a>
-        <a class="btn btn-sm" href="{% url 'view_content' content.slug %}"><i class="far fa-plus-square"></i></a>
+        {% include 'subjects/snippets/bookmark_content.html' %}
+        {% include 'subjects/snippets/add_to_list.html' %}
       </div>
       {% endif %}
     </h3>

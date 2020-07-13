@@ -62,6 +62,12 @@ class ContentsPage(FilterView):
     filterset_class = ContentFilter
     #paginate_by = 10
 
+    def get_context_data(self, **kwargs):
+        context = super(FilterView, self).get_context_data(**kwargs)
+        user = self.request.user
+        context['bucketuser'] = get_object_or_404(BucketUser, user=user)
+        return context
+
 
 class ContentView(DetailView):
     """View content page"""
@@ -70,30 +76,11 @@ class ContentView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ContentView, self).get_context_data(**kwargs)
+        user = self.request.user
+        bucketuser = get_object_or_404(BucketUser, user=user)
+        context['bucketuser'] = bucketuser
         context['content'] = self.object
-        content_bookmarked_by = self.object.bookmarked_by.all()
-        context['content_bookmarked_by'] = content_bookmarked_by
-        context['number_of_bookmarks'] = content_bookmarked_by.count()
-        is_bookmark = False
-        is_in_user_list = False
-        context['user_lists'] = []
-        if self.request.user.is_authenticated:
-            user = self.request.user
-            bucketuser = get_object_or_404(BucketUser, user=user)
-            if self.object.bookmarked_by.filter(id=bucketuser.id).exists():
-                is_bookmark = True
-            user_lists = bucketuser.list_set.all()
-            in_list = []
-            for i in range(len(user_lists)):
-                if self.object in user_lists[i].content.all():
-                    in_list.append(1)
-                else:
-                    in_list.append(0)
-            context['user_lists'] = list(zip(user_lists, in_list))
-            if 1 in in_list:
-                is_in_user_list = True
-        context['is_bookmark'] = is_bookmark
-        context['is_in_user_list'] = is_in_user_list
+        context['number_of_bookmarks'] = self.object.bookmarked_by.all().count()
         return context
 
 
@@ -133,6 +120,7 @@ class DeleteContentView(LoginRequiredMixin, DeleteView):
         return bucketuser.get_absolute_url()
 
 
+#https://stackoverflow.com/questions/35796195/how-to-redirect-to-previous-page-in-django-after-post-request
 class BookmarkContentView(LoginRequiredMixin, RedirectView):
     """Bookmark content"""
     model = Content
@@ -146,7 +134,7 @@ class BookmarkContentView(LoginRequiredMixin, RedirectView):
             content.bookmarked_by.remove(bucketuser)
         else:
             content.bookmarked_by.add(bucketuser)
-        return reverse('view_content', kwargs={'slug': content.slug})
+        return self.request.GET.get('next', reverse('view_content', kwargs={'slug': content.slug}))
 
 
 class AllBookmarksView(LoginRequiredMixin, FilterView):

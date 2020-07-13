@@ -42,7 +42,7 @@
           <div class="modal-content">
             <div class="modal-body text-center">
               <ul class="list-unstyled">
-                {% for user in content_bookmarked_by %}
+                {% for user in content.bookmarked_by.all %}
                 <li><a href="{{ user.get_absolute_url }}">{{ user }}</a></li>
                 {% empty %}
                 No bookmarks yet
@@ -53,38 +53,8 @@
         </div>
       </div>
 
-      {% if is_bookmark %}
-      <a class="btn" href="{% url 'bookmark_content' content.slug %}"><i class="fa fa-bookmark"></i></a>
-      {% else %}
-      <a class="btn" href="{% url 'bookmark_content' content.slug %}"><i class="far fa-bookmark"></i></a>
-      {% endif %}
-      {% if is_in_user_list %}
-      <a class="btn" data-toggle="collapse" href="#lists" role="button" aria-expanded="false" aria-controls="lists">
-        <i class="fas fa-plus-square"></i></a>
-      {% else %}
-      <a class="btn" data-toggle="collapse" href="#lists" role="button" aria-expanded="false" aria-controls="lists">
-        <i class="far fa-plus-square"></i></a>
-      {% endif %}
-      <div class="collapse" id="lists">
-        <div class="card border-light col-sm-6 col-md-4 col-lg-3 card-body">
-          <ul class="list-unstyled">
-            {% for list, i in user_lists %}
-            <li>
-              {% if i == 1 %}
-              <a class="btn btn-sm" href="#"><i class="fas fa-check-square"></i></a>
-              {% else %}
-              <a class="btn btn-sm" href="#"><i class="far fa-square"></i></a>
-              {% endif %}
-              {{ list.name }}
-            </li>
-            {% endfor %}
-            <li>
-              <a class="btn btn-sm" href="{% url 'add_list' %}"><i class="fas fa-plus"></i></a>
-              Add list
-            </li>
-          </ul>
-        </div>
-      </div>
+      {% include 'subjects/snippets/bookmark_content.html' %}
+      {% include 'subjects/snippets/add_to_list.html' %}
     </div>
   </div>
 </div>

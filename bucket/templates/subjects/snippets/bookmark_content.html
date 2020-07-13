@@ -1,0 +1,7 @@
+<a class="btn" href="{% url 'bookmark_content' content.slug %}?next={{ request.path }}">
+  {% if bucketuser in content.bookmarked_by.all %}
+  <i class="fa fa-bookmark"></i>
+  {% else %}
+  <i class="far fa-bookmark"></i>
+  {% endif %}
+</a>
