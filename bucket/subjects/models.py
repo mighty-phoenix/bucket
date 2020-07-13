@@ -3,9 +3,11 @@ from django.utils.text import slugify
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from urllib.parse import urlparse
+import tagulous.models
 
 from bucket.settings import base
 from subjects.constants import CONTENT_TYPES
+from common.models import Tags
 from users.models import BucketUser
 
 
@@ -50,6 +52,7 @@ class Content(models.Model):
                                            blank=True,
                                            related_name='content_bookmark',
                                            verbose_name='Bookmarked By')
+    tags = tagulous.models.TagField(to=Tags, related_name='content_tag')
 
     class Meta:
         ordering = ['title']

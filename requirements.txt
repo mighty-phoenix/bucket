@@ -11,3 +11,4 @@ gunicorn==20.0.4
 whitenoise==5.0.1
 django-nose==1.4.6
 django-filter==2.3.0
+django-tagulous==0.14.1

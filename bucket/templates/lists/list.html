@@ -24,6 +24,9 @@
       </h1>
       <hr/>
       <p>{{ list.description | linebreaks}}</p>
+      {% for tag in list.tags.all %}
+      <a class="text-muted small inline" href="{{ tag.get_absolute_url }}">{{ tag }}</a>
+      {% endfor %}
       <p class="text-muted small inline">
         {{ number_of_items }} items &nbsp;
         <!-- Button trigger modal -->

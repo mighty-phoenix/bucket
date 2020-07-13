@@ -15,8 +15,9 @@ from django_filters.views import FilterView
 from subjects.constants import CONTENT_TYPES
 from subjects.forms import (AddSubjectForm, EditSubjectForm,
                             AddContentForm, EditContentForm)
-from subjects.filters import ContentFilter, ContentBookmarkFilter
+from subjects.filters import ContentFilter, ContentBookmarkFilter, ContentTagFilter
 from subjects.models import Subject, Content
+from common.models import Tags
 from users.models import BucketUser
 
 
@@ -154,3 +155,16 @@ class AllBookmarksView(LoginRequiredMixin, FilterView):
     template_name = "subjects/all_bookmarks.html"
     filterset_class = ContentBookmarkFilter
     #paginate_by = 10
+
+
+class ViewTagContent(FilterView):
+    """View all content of a tag"""
+    model = Content
+    template_name = "subjects/tag_content.html"
+    filterset_class = ContentTagFilter
+
+    def get_context_data(self, **kwargs):
+        context = super(ViewTagContent, self).get_context_data(**kwargs)
+        self.tag = get_object_or_404(Tags, slug=self.kwargs['slug'])
+        context['tag'] = self.tag
+        return context

@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^content/(?P<slug>[\w-]+)$', ContentView.as_view(), name='view_content'),
     url(r'^content/(?P<slug>[\w-]+)/bookmark$', BookmarkContentView.as_view(), name='bookmark_content'),
     url(r'^bookmarks/$', AllBookmarksView.as_view(), name='all_bookmarks'),
+    url(r'^tags/(?P<slug>[\w-]+)/$', ViewTagContent.as_view(), name='view_tag')
 ]

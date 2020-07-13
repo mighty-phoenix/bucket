@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.twitter',
     'crispy_forms',
     'imagekit',
+    'tagulous',
 ]
 
 
@@ -146,6 +147,14 @@ ACCOUNT_EMAIL_VERIFICATION = "none"
 
 # Django Crispy Forms configuration
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+# Django tagulous settings
+SERIALIZATION_MODULES = {
+    'xml':    'tagulous.serializers.xml_serializer',
+    'json':   'tagulous.serializers.json',
+    'python': 'tagulous.serializers.python',
+    'yaml':   'tagulous.serializers.pyyaml',
+}
 
 # Activate Django-Heroku.
 django_heroku.settings(locals())

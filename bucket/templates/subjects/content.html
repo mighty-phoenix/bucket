@@ -22,6 +22,9 @@
       {% if content.content_url %}
       <p><a href="{{ content.content_url }}" target="_blank">{{ content.url_text }}</a></p>
       {% endif %}
+      {% for tag in content.tags.all %}
+      <a class="text-muted small inline" href="{{ tag.get_absolute_url }}">{{ tag }}</a>
+      {% endfor %}
       <p class="text-muted small inline">
         <!-- Button trigger modal -->
         <span type="button" data-toggle="modal" data-target="#exampleModalCenter">
