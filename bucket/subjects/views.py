@@ -17,7 +17,7 @@ from subjects.forms import (AddSubjectForm, EditSubjectForm,
                             AddContentForm, EditContentForm)
 from subjects.filters import ContentFilter, ContentBookmarkFilter, ContentTagFilter
 from subjects.models import Subject, Content
-from common.models import Tags
+from common.models import Tag
 from users.models import BucketUser
 
 
@@ -155,6 +155,6 @@ class ViewTagContent(FilterView):
 
     def get_context_data(self, **kwargs):
         context = super(ViewTagContent, self).get_context_data(**kwargs)
-        self.tag = get_object_or_404(Tags, slug=self.kwargs['slug'])
+        self.tag = get_object_or_404(Tag, slug=self.kwargs['slug'])
         context['tag'] = self.tag
         return context

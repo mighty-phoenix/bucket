@@ -3,7 +3,7 @@ import tagulous.models
 from django.urls import reverse
 
 
-class Tags(tagulous.models.TagModel):
+class Tag(tagulous.models.TagModel):
     class TagMeta:
         # Tag options
         initial = "technology, entrepreneurship, self-development, self-growth"

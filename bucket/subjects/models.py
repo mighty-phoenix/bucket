@@ -7,7 +7,7 @@ import tagulous.models
 
 from bucket.settings import base
 from subjects.constants import CONTENT_TYPES
-from common.models import Tags
+from common.models import Tag
 from users.models import BucketUser
 
 
@@ -52,7 +52,7 @@ class Content(models.Model):
                                            blank=True,
                                            related_name='content_bookmark',
                                            verbose_name='Bookmarked By')
-    tags = tagulous.models.TagField(to=Tags, related_name='content_tag')
+    tags = tagulous.models.TagField(to=Tag, related_name='content_tag')
 
     class Meta:
         ordering = ['title']
