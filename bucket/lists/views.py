@@ -164,9 +164,10 @@ class AddToListView(LoginRequiredMixin, RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         user = self.request.user
         bucketuser = get_object_or_404(BucketUser, user=user)
-        content = get_object_or_404(Content, title=self.kwargs['slug'])
-        if content.bookmarked_by.filter(id=bucketuser.id).exists():
-            content.bookmarked_by.remove(bucketuser)
+        list = List.objects.get(slug=self.kwargs['slug'], user=bucketuser)
+        content = get_object_or_404(Content, slug=self.kwargs['content_slug'])
+        if content in list.content.all():
+            list.content.remove(content)
         else:
-            content.bookmarked_by.add(bucketuser)
-        return reverse('view_content', kwargs={'slug': content.slug})
+            list.content.add(content)
+        return self.request.GET.get('next', reverse('view_list', kwargs={'slug': list.slug}))

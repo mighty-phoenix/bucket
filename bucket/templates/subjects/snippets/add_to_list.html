@@ -5,7 +5,7 @@
 
   <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
     {% for list in bucketuser.list_set.all %}
-    <a class="dropdown-item" href="#">
+    <a class="dropdown-item" href="{% url 'add_to_list' list.slug content.slug %}?next={{ request.path }}">
       {% if content in list.content.all %}
       <i class="fas fa-check-square"></i>
       {% else %}
