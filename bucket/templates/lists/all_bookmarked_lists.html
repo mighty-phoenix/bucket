@@ -4,6 +4,7 @@
   {{ bucketuser }} - Bookmarked Lists
 {% endblock %}
 
+{% load crispy_forms_tags %}
 {% block content %}
 <div class="container col-lg-10 offset-lg-1 mt40">
   <div class="row mt40">
@@ -13,7 +14,35 @@
     </div>
     <div class="mb40"></div>
     <div class="col-md-8 offset-md-2">
-      {% for list in bookmarked_lists %}
+
+      <form method="GET">
+        <div class="form-inline d-flex justify-content-center">
+          <div class="form-group mx-sm-3 mb-2">
+            {{ filter.form.name | as_crispy_field }}
+          </div>
+          <button class="btn mb-2" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+            <i class="fas fa-filter"></i>
+          </button>
+          <button type="submit" class="btn btn-primary mb-2"><i class="fa fa-search"></i></button>
+        </div>
+
+        <div class="collapse" id="collapseExample">
+          <div class="card card-body">
+            <p>Tags</p>
+            <div class="form-group">
+              {% for checkbox in filter.form.tags %}
+              <div class="form-check form-check-inline">
+                <label class="form-check-label">
+                {{ checkbox.tag }} {{ checkbox.choice_label }}
+                </label>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </form>
+
+      {% for list in filter.qs %}
       {% include 'lists/snippets/list_card.html' %}
       {% empty %}
       <p>No bookmarked lists.</p>

@@ -132,7 +132,7 @@ class BookmarkContentView(LoginRequiredMixin, RedirectView):
         user = self.request.user
         bucketuser = get_object_or_404(BucketUser, user=user)
         content = get_object_or_404(Content, slug=self.kwargs['slug'])
-        if content.bookmarked_by.filter(id=bucketuser.id).exists():
+        if bucketuser in content.bookmarked_by.all():
             content.bookmarked_by.remove(bucketuser)
         else:
             content.bookmarked_by.add(bucketuser)

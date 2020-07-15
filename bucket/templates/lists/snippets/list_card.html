@@ -2,6 +2,12 @@
   <div class="card-body left">
     <h3 class="card-title">
       <a class="card-link" href="{% url 'view_list' list.slug %}">{{ list.name }}</a>
+      {% url 'lists_page' as url %}
+      {% if url == request.path %}
+      <div class="right">
+        {% include 'lists/snippets/bookmark_list.html' %}
+      </div>
+      {% endif %}
     </h3>
     <p class="card-text"><em>created by {{ list.user }}</em></p>
     <p>{{ list.description | linebreaks }}</p>

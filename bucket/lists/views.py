@@ -8,23 +8,28 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from braces.views import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django_filters.views import FilterView
 
 from lists.forms import AddListForm, EditListForm
+from lists.filters import ListFilter, UserListFilter, ListBookmarkFilter
 from lists.models import List
 from subjects.models import Content
 from users.models import BucketUser
 
 
-class ListsPage(ListView):
+class ListsPage(FilterView):
     """Show all lists"""
     model = List
     template_name = "lists/lists_page.html"
-    context_object_name = 'lists'
+    filterset_class = ListFilter
     #paginate_by = 10
 
-    def get_queryset(self, *args, **kwargs):
-        lists = List.objects.all().order_by('name')
-        return lists
+    def get_context_data(self, **kwargs):
+        context = super(FilterView, self).get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            user = self.request.user
+            context['bucketuser'] = get_object_or_404(BucketUser, user=user)
+        return context
 
 
 class ViewList(DetailView):
@@ -41,14 +46,10 @@ class ViewList(DetailView):
         list_bookmarked_by = self.object.bookmarked_by.all()
         context['list_bookmarked_by'] = list_bookmarked_by
         context['number_of_bookmarks'] = list_bookmarked_by.count()
-        is_bookmark = False
         if self.request.user.is_authenticated:
             user = self.request.user
             bucketuser = get_object_or_404(BucketUser, user=user)
             context['bucketuser'] = bucketuser
-            if self.object.bookmarked_by.filter(id=bucketuser.id).exists():
-                is_bookmark = True
-        context['is_bookmark'] = is_bookmark
         return context
 
 
@@ -116,44 +117,34 @@ class DeleteListView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
 
 class BookmarkListView(LoginRequiredMixin, RedirectView):
     """Bookmark a list"""
-    model = Content
+    model = List
     template_name = "lists/bookmark.html"
 
     def get_redirect_url(self, *args, **kwargs):
         user = self.request.user
         bucketuser = get_object_or_404(BucketUser, user=user)
         list = get_object_or_404(List, slug=self.kwargs['slug'])
-        if list.bookmarked_by.filter(id=bucketuser.id).exists():
+        if bucketuser in list.bookmarked_by.all():
             list.bookmarked_by.remove(bucketuser)
         else:
             list.bookmarked_by.add(bucketuser)
-        return reverse('view_list', kwargs={'slug': list.slug})
+        return self.request.GET.get('next', reverse('view_list', kwargs={'slug': list.slug}))
 
 
-class AllUserListsView(LoginRequiredMixin, ListView):
+class AllUserListsView(LoginRequiredMixin, FilterView):
     """View all lists created by the user."""
     model = List
     template_name = "lists/all_user_lists.html"
-    context_object_name = 'user_lists'
-    paginate_by = 10
-
-    def get_queryset(self, *args, **kwargs):
-        bucketuser = get_object_or_404(BucketUser, user=self.request.user)
-        user_lists = bucketuser.list_set.all().order_by('name')
-        return user_lists
+    filterset_class = UserListFilter
+    #paginate_by = 10
 
 
-class AllBookmarkedListsView(LoginRequiredMixin, ListView):
+class AllBookmarkedListsView(LoginRequiredMixin, FilterView):
     """View all lists bookmarked by the user."""
     model = List
     template_name = "lists/all_bookmarked_lists.html"
-    context_object_name = 'bookmarked_lists'
-    paginate_by = 10
-
-    def get_queryset(self, *args, **kwargs):
-        bucketuser = get_object_or_404(BucketUser, user=self.request.user)
-        user_lists = bucketuser.list_bookmark.all().order_by('name')
-        return user_lists
+    filterset_class = ListBookmarkFilter
+    #paginate_by = 10
 
 
 class AddToListView(LoginRequiredMixin, RedirectView):
