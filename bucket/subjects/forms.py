@@ -2,6 +2,7 @@ from django import forms
 
 from common.forms import ModelFormWithHelper
 from common.helpers import SubmitCancelFormHelper
+from subjects.constants import movie_genres
 from subjects.models import Subject, Content
 from users.models import BucketUser
 
@@ -40,3 +41,10 @@ class EditContentForm(ModelFormWithHelper):
         fields = ('title', 'type', 'creator', 'content_url', 'tags')
         helper_class = SubmitCancelFormHelper
         helper_cancel_href = "{% url 'view_content' content.slug %}"
+
+
+class SearchMovies(forms.Form):
+    search = forms.CharField(label='', required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Search'}))
+    genre = forms.MultipleChoiceField(label='', choices=list(movie_genres.items()),
+        widget=forms.CheckboxSelectMultiple)

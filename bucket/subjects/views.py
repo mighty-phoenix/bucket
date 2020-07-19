@@ -1,4 +1,5 @@
-#from django.shortcuts import render
+import os
+import tmdbsimple as tmdb
 from django.http import HttpResponse
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, render
@@ -12,13 +13,16 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django_filters.views import FilterView
 
-from subjects.constants import CONTENT_TYPES
-from subjects.forms import (AddSubjectForm, EditSubjectForm,
+from subjects.constants import CONTENT_TYPES, movie_genres
+from subjects.forms import (AddSubjectForm, EditSubjectForm, SearchMovies,
                             AddContentForm, EditContentForm)
 from subjects.filters import ContentFilter, ContentBookmarkFilter, ContentTagFilter
 from subjects.models import Subject, Content
 from common.models import Tag
 from users.models import BucketUser
+
+
+tmdb.API_KEY = os.environ['TMDB_API_KEY']
 
 
 class SubjectsList(ListView):
@@ -67,6 +71,36 @@ class ContentsPage(FilterView):
         if self.request.user.is_authenticated:
             user = self.request.user
             context['bucketuser'] = get_object_or_404(BucketUser, user=user)
+        return context
+
+
+#https://github.com/coderIlluminatus/django-tmdb/blob/master/movies/views.py
+class MoviesPageView(FormView):
+    template_name = 'subjects/movies_page.html'
+    form_class = SearchMovies
+
+    def get_success_url(self):
+        return reverse('movies_page')
+
+    def get_context_data(self, **kwargs):
+        context = super(MoviesPageView, self).get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            user = self.request.user
+            context['bucketuser'] = get_object_or_404(BucketUser, user=user)
+        context['genres'] = movie_genres
+        search = self.request.GET.get('search')
+        genre = self.request.GET.getlist('genre')
+        if search != '' and search is not None:
+            movies = tmdb.Search().movie(query=search)['results']
+            genre = [ int(i) for i in genre ]
+            movies = [movie for movie in movies if set(genre) == set(genre).intersection(movie['genre_ids'])]
+            context['movies'] = sorted(movies, key=lambda x: x['popularity'], reverse=True)
+            context['has_result'] = (movies != [])
+        else:
+            genre = ', '.join(genre)
+            movies = tmdb.Discover().movie(sort_by='popularity.desc', with_genres=genre)['results']
+            context['movies'] = movies
+            context['has_result'] = (movies != [])
         return context
 
 
