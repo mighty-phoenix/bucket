@@ -42,6 +42,10 @@
       <li class="nav-item {% if url == request.path %}active{% endif %}">
         <a class="nav-link" href="{{ url }}">Movies</a>
       </li>
+      {% url 'books_page' as url %}
+      <li class="nav-item {% if url == request.path %}active{% endif %}">
+        <a class="nav-link" href="{{ url }}">Books</a>
+      </li>
     </ul>
     <ul class="navbar-nav">
       {% if user.is_authenticated and user.is_active %}

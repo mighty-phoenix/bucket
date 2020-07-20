@@ -48,3 +48,8 @@ class SearchMovies(forms.Form):
         widget=forms.TextInput(attrs={'placeholder': 'Search'}))
     genre = forms.MultipleChoiceField(label='', choices=list(movie_genres.items()),
         widget=forms.CheckboxSelectMultiple)
+
+
+class SearchBooks(forms.Form):
+    search = forms.CharField(label='', required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Search'}))

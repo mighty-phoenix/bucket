@@ -1,4 +1,5 @@
 import os
+import requests
 import tmdbsimple as tmdb
 from django.http import HttpResponse
 from django.urls import reverse
@@ -15,7 +16,7 @@ from django_filters.views import FilterView
 
 from subjects.constants import CONTENT_TYPES, movie_genres
 from subjects.forms import (AddSubjectForm, EditSubjectForm, SearchMovies,
-                            AddContentForm, EditContentForm)
+                            AddContentForm, EditContentForm, SearchBooks)
 from subjects.filters import ContentFilter, ContentBookmarkFilter, ContentTagFilter
 from subjects.models import Subject, Content
 from common.models import Tag
@@ -95,12 +96,32 @@ class MoviesPageView(FormView):
             genre = [ int(i) for i in genre ]
             movies = [movie for movie in movies if set(genre) == set(genre).intersection(movie['genre_ids'])]
             context['movies'] = sorted(movies, key=lambda x: x['popularity'], reverse=True)
-            context['has_result'] = (movies != [])
         else:
             genre = ', '.join(genre)
             movies = tmdb.Discover().movie(sort_by='popularity.desc', with_genres=genre)['results']
             context['movies'] = movies
-            context['has_result'] = (movies != [])
+        return context
+
+
+#https://openlibrary.org/developers/api
+#https://github.com/internetarchive/openlibrary-client
+class BooksPageView(FormView):
+    template_name = 'subjects/books_page.html'
+    form_class = SearchBooks
+
+    def get_success_url(self):
+        return reverse('books_page')
+
+    def get_context_data(self, **kwargs):
+        context = super(BooksPageView, self).get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            user = self.request.user
+            context['bucketuser'] = get_object_or_404(BucketUser, user=user)
+        search = self.request.GET.get('search')
+        if search != '' and search is not None:
+            url = 'http://openlibrary.org/search.json?title=' + search
+            books = requests.get(url).json()['docs']
+            context['books'] = books
         return context
 
 
