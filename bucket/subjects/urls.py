@@ -7,6 +7,7 @@ urlpatterns = [
     url(r'^(?P<slug>[\w-]+)$', SubjectPageView.as_view(), name='view_subject_page'),
     url(r'^$', ContentsPage.as_view(), name='contents_page'),
     url(r'^movies/$', MoviesPageView.as_view(), name='movies_page'),
+    url(r'^tv-series/$', TVShowsPageView.as_view(), name='tvshows_page'),
     url(r'^books/$', BooksPageView.as_view(), name='books_page'),
     url(r'^content/add$', AddContentView.as_view(), name='add_content'),
     url(r'^content/(?P<slug>[\w-]+)/edit$', EditContentView.as_view(), name='edit_content'),

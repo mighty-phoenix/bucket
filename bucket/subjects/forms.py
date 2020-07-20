@@ -2,7 +2,7 @@ from django import forms
 
 from common.forms import ModelFormWithHelper
 from common.helpers import SubmitCancelFormHelper
-from subjects.constants import movie_genres
+from subjects.constants import movie_genres, tv_genres
 from subjects.models import Subject, Content
 from users.models import BucketUser
 
@@ -47,6 +47,13 @@ class SearchMovies(forms.Form):
     search = forms.CharField(label='', required=False,
         widget=forms.TextInput(attrs={'placeholder': 'Search'}))
     genre = forms.MultipleChoiceField(label='', choices=list(movie_genres.items()),
+        widget=forms.CheckboxSelectMultiple)
+
+
+class SearchTVShows(forms.Form):
+    search = forms.CharField(label='', required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Search'}))
+    genre = forms.MultipleChoiceField(label='', choices=list(tv_genres.items()),
         widget=forms.CheckboxSelectMultiple)
 
 

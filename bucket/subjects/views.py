@@ -14,9 +14,10 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django_filters.views import FilterView
 
-from subjects.constants import CONTENT_TYPES, movie_genres
-from subjects.forms import (AddSubjectForm, EditSubjectForm, SearchMovies,
-                            AddContentForm, EditContentForm, SearchBooks)
+from subjects.constants import CONTENT_TYPES, movie_genres, tv_genres
+from subjects.forms import (AddSubjectForm, EditSubjectForm, AddContentForm,
+                            EditContentForm, SearchMovies, SearchTVShows,
+                            SearchBooks)
 from subjects.filters import ContentFilter, ContentBookmarkFilter, ContentTagFilter
 from subjects.models import Subject, Content
 from common.models import Tag
@@ -100,6 +101,33 @@ class MoviesPageView(FormView):
             genre = ', '.join(genre)
             movies = tmdb.Discover().movie(sort_by='popularity.desc', with_genres=genre)['results']
             context['movies'] = movies
+        return context
+
+
+class TVShowsPageView(FormView):
+    template_name = 'subjects/tvshows_page.html'
+    form_class = SearchTVShows
+
+    def get_success_url(self):
+        return reverse('tvshows_page')
+
+    def get_context_data(self, **kwargs):
+        context = super(TVShowsPageView, self).get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            user = self.request.user
+            context['bucketuser'] = get_object_or_404(BucketUser, user=user)
+        context['genres'] = tv_genres
+        search = self.request.GET.get('search')
+        genre = self.request.GET.getlist('genre')
+        if search != '' and search is not None:
+            tvshows = tmdb.Search().tv(query=search)['results']
+            genre = [ int(i) for i in genre ]
+            tvshows = [show for show in tvshows if set(genre) == set(genre).intersection(show['genre_ids'])]
+            context['tvshows'] = sorted(tvshows, key=lambda x: x['popularity'], reverse=True)
+        else:
+            genre = ', '.join(genre)
+            tvshows = tmdb.Discover().tv(sort_by='popularity.desc', with_genres=genre)['results']
+            context['tvshows'] = tvshows
         return context
 
 

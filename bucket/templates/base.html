@@ -42,6 +42,10 @@
       <li class="nav-item {% if url == request.path %}active{% endif %}">
         <a class="nav-link" href="{{ url }}">Movies</a>
       </li>
+      {% url 'tvshows_page' as url %}
+      <li class="nav-item {% if url == request.path %}active{% endif %}">
+        <a class="nav-link" href="{{ url }}">TV Shows</a>
+      </li>
       {% url 'books_page' as url %}
       <li class="nav-item {% if url == request.path %}active{% endif %}">
         <a class="nav-link" href="{{ url }}">Books</a>
