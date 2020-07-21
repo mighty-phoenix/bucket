@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% load get_value_from_dict %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="container col-lg-10 offset-lg-1 mt40">
+  <div class="row mt40">
+    <div class="col-sm-12">
+
+      <form method="GET">
+        <div class="form-inline d-flex justify-content-center">
+          <div class="form-group mx-sm-3 mb-2">
+            {{ form.search | as_crispy_field }}
+            <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
+          </div>
+        </div>
+      </form>
+
+      {% comment %}
+      <div class="mt20"></div>
+      <a href="{% url 'add_content' %}" role="button" class="btn"><i class="fas fa-plus"></i>&nbsp; Add new content</a>
+      <div class="mb40"></div>
+      {% endcomment %}
+      {% for video in videos %}
+      <div class="card border-light mb-3">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-2">
+              <img class="card-image img-fluid" src={{video.snippet.thumbnails.medium.url}} />
+            </div>
+            <div class="col-10 left">
+              <h3 class="card-title">
+                <a class="card-link" href="#">{{ video.snippet.title|safe }}</a>
+              </h3>
+              <p>{{ video.snippet.description | linebreaks }}</p>
+              <p class="text-muted small">
+                {{ video.snippet.channelTitle }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

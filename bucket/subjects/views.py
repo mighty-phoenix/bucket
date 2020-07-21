@@ -17,7 +17,7 @@ from django_filters.views import FilterView
 from subjects.constants import CONTENT_TYPES, movie_genres, tv_genres
 from subjects.forms import (AddSubjectForm, EditSubjectForm, AddContentForm,
                             EditContentForm, SearchMovies, SearchTVShows,
-                            SearchBooks)
+                            SearchBooks, SearchYoutube)
 from subjects.filters import ContentFilter, ContentBookmarkFilter, ContentTagFilter
 from subjects.models import Subject, Content
 from common.models import Tag
@@ -150,6 +150,29 @@ class BooksPageView(FormView):
             url = 'http://openlibrary.org/search.json?title=' + search
             books = requests.get(url).json()['docs']
             context['books'] = books
+        return context
+
+
+class YoutubePageView(FormView):
+    template_name = 'subjects/youtube_page.html'
+    form_class = SearchYoutube
+
+    def get_success_url(self):
+        return reverse('youtube_page')
+
+    def get_context_data(self, **kwargs):
+        context = super(YoutubePageView, self).get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            user = self.request.user
+            context['bucketuser'] = get_object_or_404(BucketUser, user=user)
+        search = self.request.GET.get('search')
+        if search != '' and search is not None:
+            url = 'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=' \
+                  + search \
+                  + '&key=AIzaSyA3ghYFni1exM2g8QBdoDX3_jod4e_fJK8'
+            videos = requests.get(url).json()['items']
+            print(videos)
+            context['videos'] = videos
         return context
 
 

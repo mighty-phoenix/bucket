@@ -50,6 +50,10 @@
       <li class="nav-item {% if url == request.path %}active{% endif %}">
         <a class="nav-link" href="{{ url }}">Books</a>
       </li>
+      {% url 'youtube_page' as url %}
+      <li class="nav-item {% if url == request.path %}active{% endif %}">
+        <a class="nav-link" href="{{ url }}">Youtube</a>
+      </li>
     </ul>
     <ul class="navbar-nav">
       {% if user.is_authenticated and user.is_active %}

@@ -60,3 +60,8 @@ class SearchTVShows(forms.Form):
 class SearchBooks(forms.Form):
     search = forms.CharField(label='', required=False,
         widget=forms.TextInput(attrs={'placeholder': 'Search'}))
+
+
+class SearchYoutube(forms.Form):
+    search = forms.CharField(label='', required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Search'}))
