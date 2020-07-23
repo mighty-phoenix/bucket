@@ -14,7 +14,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django_filters.views import FilterView
 
-from subjects.constants import CONTENT_TYPES, movie_genres, tv_genres
+from subjects.constants import movie_genres, tv_genres
 from subjects.forms import (AddSubjectForm, EditSubjectForm, AddContentForm,
                             EditContentForm, SearchMovies, SearchTVShows,
                             SearchBooks, SearchYoutube)

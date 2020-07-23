@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 import tagulous.models
 
 from bucket.settings import base
-from subjects.constants import CONTENT_TYPES
+from subjects.constants import media_types
 from common.models import Tag
 from users.models import BucketUser
 
@@ -34,7 +34,7 @@ class Content(models.Model):
     title = models.CharField(max_length=255, unique=True, verbose_name="Title")
     slug = models.SlugField(max_length=150, unique=True, editable=False, verbose_name="Slug")
     type = models.CharField(max_length=150,
-                            choices=CONTENT_TYPES,
+                            choices=media_types,
                             default='other',
                             verbose_name="Type")
     # This is the writer/director/etc of the content, NOT the user who added this to the site

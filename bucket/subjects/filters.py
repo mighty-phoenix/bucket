@@ -2,7 +2,7 @@ import django_filters
 from django import forms
 from django.shortcuts import get_object_or_404
 
-from subjects.constants import CONTENT_TYPES
+from subjects.constants import media_types
 from subjects.models import Content
 from common.models import Tag
 from users.models import BucketUser
@@ -11,7 +11,7 @@ from users.models import BucketUser
 class ContentFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(label='', lookup_expr='icontains',
         widget=forms.TextInput(attrs={'placeholder': 'Search'}))
-    type = django_filters.MultipleChoiceFilter(label='', choices=CONTENT_TYPES,
+    type = django_filters.MultipleChoiceFilter(label='', choices=media_types,
         widget=forms.CheckboxSelectMultiple)
     tags = django_filters.ModelMultipleChoiceFilter(queryset=Tag.objects.all(),
         widget=forms.CheckboxSelectMultiple)
@@ -24,7 +24,7 @@ class ContentFilter(django_filters.FilterSet):
 class ContentBookmarkFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(label='', lookup_expr='icontains',
         widget=forms.TextInput(attrs={'placeholder': 'Search'}))
-    type = django_filters.MultipleChoiceFilter(label='', choices=CONTENT_TYPES,
+    type = django_filters.MultipleChoiceFilter(label='', choices=media_types,
         widget=forms.CheckboxSelectMultiple)
     tags = django_filters.ModelMultipleChoiceFilter(queryset=Tag.objects.all(),
         widget=forms.CheckboxSelectMultiple)
@@ -45,7 +45,7 @@ class ContentBookmarkFilter(django_filters.FilterSet):
 class ContentTagFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(label='', lookup_expr='icontains',
         widget=forms.TextInput(attrs={'placeholder': 'Search'}))
-    type = django_filters.MultipleChoiceFilter(label='', choices=CONTENT_TYPES,
+    type = django_filters.MultipleChoiceFilter(label='', choices=media_types,
         widget=forms.CheckboxSelectMultiple)
 
     class Meta:

@@ -1,11 +1,11 @@
 # Content Types
-CONTENT_TYPES = [
+media_types = [
     ('book', 'Book'),
     ('movie', 'Movie'),
-    ('documentary', 'Documentary'),
-    ('website', 'Website'),
+    ('tv', 'TV Show'),
     ('youtube_channel', 'Youtube Channel'),
-    ('social_media', 'Social Media'),
+    ('youtube_video', 'Youtube Video'),
+    ('youtube_playlist', 'Youtube Playlist'),
     ('other', 'Other'),
 ]
 
