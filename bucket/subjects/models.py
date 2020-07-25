@@ -37,7 +37,6 @@ class Content(models.Model):
                             choices=media_types,
                             default='other',
                             verbose_name="Type")
-    creator = models.CharField(max_length=255, blank=True, verbose_name="Creator")
     image = models.ImageField(upload_to='content_images',
                               blank=True,
                               null=True,
@@ -46,10 +45,6 @@ class Content(models.Model):
                                      processors=[ResizeToFill(100, 150)],
                                      options={'quality': 100})
     description = models.TextField(blank=True, verbose_name="Description")
-    bookmarked_by = models.ManyToManyField(BucketUser,
-                                           blank=True,
-                                           related_name='content_bookmark',
-                                           verbose_name='Bookmarked By')
     tags = tagulous.models.TagField(to=Tag, related_name='content_tag')
     topics = tagulous.models.TagField(to=Topic, related_name='topic')
 
