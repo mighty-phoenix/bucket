@@ -1,12 +1,13 @@
+import tagulous.models
 from django.db import models
 from django.utils.text import slugify
+from django.contrib.contenttypes.fields import GenericRelation
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from urllib.parse import urlparse
-import tagulous.models
 
 from subjects.constants import media_types
-from common.models import Tag, Topic
+from common.models import Tag, Topic, Bookmark
 from users.models import BucketUser
 
 
@@ -46,7 +47,8 @@ class Content(models.Model):
                                      options={'quality': 100})
     description = models.TextField(blank=True, verbose_name="Description")
     tags = tagulous.models.TagField(to=Tag, related_name='content_tag')
-    topics = tagulous.models.TagField(to=Topic, related_name='topic')
+    topics = tagulous.models.TagField(to=Topic, related_name='content_topic')
+    bookmarks = GenericRelation(Bookmark)
 
     class Meta:
         ordering = ['title']
@@ -55,7 +57,8 @@ class Content(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(self.title, allow_unicode=True)
+        slug = slugify(self.title, allow_unicode=True)
+        self.slug = str(self.pk) + '-' + slug
         super().save(*args, **kwargs)
 
     def url_text(self):

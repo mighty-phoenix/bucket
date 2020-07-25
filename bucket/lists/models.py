@@ -1,10 +1,11 @@
-from django.db import models
-from django.utils.crypto import get_random_string
 import tagulous.models
+from django.db import models
+from django.contrib.contenttypes.fields import GenericRelation
+from django.utils.crypto import get_random_string
 
-from bucket.settings import base
+from common.constants import visibility
+from common.models import Tag, Topic, Bookmark
 from subjects.models import Content
-from common.models import Tag
 from users.models import BucketUser
 
 class List(models.Model):
@@ -12,16 +13,19 @@ class List(models.Model):
     user = models.ForeignKey(BucketUser, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, verbose_name="Name")
     slug = models.SlugField(max_length=150, unique=True, editable=False, verbose_name="Slug")
+    date_created = models.DateTimeField(auto_now_add=True, verbose_name='Date created')
     description = models.TextField(blank=True, verbose_name="Description")
     content = models.ManyToManyField(Content,
                                      blank=True,
                                      related_name='content',
                                      verbose_name='Content')
-    bookmarked_by = models.ManyToManyField(BucketUser,
-                                           blank=True,
-                                           related_name='list_bookmark',
-                                           verbose_name='Bookmarked By')
+    visibility = models.CharField(max_length=150,
+                                  choices=visibility,
+                                  default='public',
+                                  verbose_name="Visibility")
     tags = tagulous.models.TagField(to=Tag, related_name='list_tag')
+    topics = tagulous.models.TagField(to=Topic, related_name='list_topic')
+    bookmarks = GenericRelation(Bookmark)
 
     class Meta:
         ordering = ['name']
