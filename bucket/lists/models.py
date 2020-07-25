@@ -4,16 +4,16 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.crypto import get_random_string
 
 from common.constants import visibility
-from common.models import Tag, Topic, Bookmark
+from common.models import Tag, Topic
 from subjects.models import Content
-from users.models import BucketUser
+from users.models import BucketUser, Bookmark
 
 class List(models.Model):
     """Content lists which can be created for each user."""
     user = models.ForeignKey(BucketUser, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, verbose_name="Name")
     slug = models.SlugField(max_length=150, unique=True, editable=False, verbose_name="Slug")
-    date_created = models.DateTimeField(auto_now_add=True, verbose_name='Date created')
+    date_created = models.DateTimeField(auto_now_add=True)
     description = models.TextField(blank=True, verbose_name="Description")
     content = models.ManyToManyField(Content,
                                      blank=True,
@@ -25,7 +25,6 @@ class List(models.Model):
                                   verbose_name="Visibility")
     tags = tagulous.models.TagField(to=Tag, related_name='list_tag')
     topics = tagulous.models.TagField(to=Topic, related_name='list_topic')
-    bookmarks = GenericRelation(Bookmark)
 
     class Meta:
         ordering = ['name']

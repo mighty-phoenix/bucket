@@ -3,8 +3,13 @@ from django.urls import reverse
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
+
+from common.constants import status, visibility
+from subjects.models import Content
 
 
 class BucketUser(models.Model):
@@ -18,6 +23,10 @@ class BucketUser(models.Model):
     profile_picture_thumbnail = ImageSpecField(source='profile_picture',
                                                processors=[ResizeToFill(100, 100)],
                                                options={'quality': 100})
+    recommendations = models.ManyToManyField(Content, through='Recommendation',
+                                             related_name='recommended_by')
+    bookmarks = models.ManyToManyField(Content, through='Bookmark',
+                                       related_name='bookmarked_by')
 
     def __str__(self):
         return str(self.user)
@@ -53,3 +62,25 @@ def create_bucket_user(sender, instance, created, **kwargs):
         if instance is not None:
             bucket_user = BucketUser(user=instance)
             bucket_user.save()
+
+
+class Recommendation(models.Model):
+    user = models.ForeignKey(BucketUser, on_delete=models.CASCADE)
+    content = models.ForeignKey(Content, on_delete=models.CASCADE)
+    notes = models.TextField(blank=True, verbose_name="Notes")
+    date_added = models.DateTimeField(auto_now_add=True)
+
+
+class Bookmark(models.Model):
+    user = models.ForeignKey(BucketUser, on_delete=models.CASCADE)
+    content = models.ForeignKey(Content, on_delete=models.CASCADE)
+    notes = models.TextField(blank=True, verbose_name="Notes")
+    date_added = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=150,
+                              choices=status,
+                              default='completed',
+                              verbose_name="Status")
+    visibility = models.CharField(max_length=150,
+                                  choices=visibility,
+                                  default='public',
+                                  verbose_name="Visibility")

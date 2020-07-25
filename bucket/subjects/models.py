@@ -7,8 +7,7 @@ from imagekit.processors import ResizeToFill
 from urllib.parse import urlparse
 
 from subjects.constants import media_types
-from common.models import Tag, Topic, Bookmark
-from users.models import BucketUser
+from common.models import Tag, Topic
 
 
 class Subject(models.Model):
@@ -48,7 +47,6 @@ class Content(models.Model):
     description = models.TextField(blank=True, verbose_name="Description")
     tags = tagulous.models.TagField(to=Tag, related_name='content_tag')
     topics = tagulous.models.TagField(to=Topic, related_name='content_topic')
-    bookmarks = GenericRelation(Bookmark)
 
     class Meta:
         ordering = ['title']
