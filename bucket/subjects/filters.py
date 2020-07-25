@@ -59,3 +59,22 @@ class ContentTagFilter(django_filters.FilterSet):
         tag = get_object_or_404(Tag, slug=slug)
 
         return parent.filter(tags=tag)
+
+
+class ContentTopicFilter(django_filters.FilterSet):
+    title = django_filters.CharFilter(label='', lookup_expr='icontains',
+        widget=forms.TextInput(attrs={'placeholder': 'Search'}))
+    type = django_filters.MultipleChoiceFilter(label='', choices=media_types,
+        widget=forms.CheckboxSelectMultiple)
+
+    class Meta:
+        model = Content
+        fields = ['title', 'type', ]
+
+    @property
+    def qs(self):
+        parent = super().qs
+        slug = self.request.get_full_path().split('/')[2]
+        topic = get_object_or_404(Topic, slug=slug)
+
+        return parent.filter(topics=topic)

@@ -5,9 +5,8 @@ from imagekit.processors import ResizeToFill
 from urllib.parse import urlparse
 import tagulous.models
 
-from bucket.settings import base
 from subjects.constants import media_types
-from common.models import Tag
+from common.models import Tag, Topic
 from users.models import BucketUser
 
 
@@ -31,13 +30,13 @@ class Subject(models.Model):
 class Content(models.Model):
     """Model to store content related to a subject"""
     subject = models.ManyToManyField(Subject, blank=True, related_name='content')
-    title = models.CharField(max_length=255, unique=True, verbose_name="Title")
+    title = models.CharField(max_length=255, verbose_name="Title")
     slug = models.SlugField(max_length=150, unique=True, editable=False, verbose_name="Slug")
+    url = models.URLField(blank=True, null=True, default='', verbose_name="URL")
     type = models.CharField(max_length=150,
                             choices=media_types,
                             default='other',
                             verbose_name="Type")
-    # This is the writer/director/etc of the content, NOT the user who added this to the site
     creator = models.CharField(max_length=255, blank=True, verbose_name="Creator")
     image = models.ImageField(upload_to='content_images',
                               blank=True,
@@ -47,12 +46,12 @@ class Content(models.Model):
                                      processors=[ResizeToFill(100, 150)],
                                      options={'quality': 100})
     description = models.TextField(blank=True, verbose_name="Description")
-    content_url = models.URLField(blank=True, null=True, default='', verbose_name="URL")
     bookmarked_by = models.ManyToManyField(BucketUser,
                                            blank=True,
                                            related_name='content_bookmark',
                                            verbose_name='Bookmarked By')
     tags = tagulous.models.TagField(to=Tag, related_name='content_tag')
+    topics = tagulous.models.TagField(to=Topic, related_name='topic')
 
     class Meta:
         ordering = ['title']

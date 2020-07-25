@@ -9,6 +9,24 @@ media_types = [
     ('other', 'Other'),
 ]
 
+topics = [
+    'Science',
+    'Technology',
+    'Entrepreneurship',
+    'Economics',
+    'Philosophy',
+    'Psychology',
+    'History',
+    'Sociology',
+    'Strategy',
+    'Self development',
+    'General knowledge',
+    'Entertainment',
+    'Photography',
+    'Trading',
+    'Miscellaneous',
+]
+
 movie_genres = {
     28: 'Action',
     12: 'Adventure',

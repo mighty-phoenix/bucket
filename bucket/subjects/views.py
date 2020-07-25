@@ -18,7 +18,8 @@ from subjects.constants import movie_genres, tv_genres
 from subjects.forms import (AddSubjectForm, EditSubjectForm, AddContentForm,
                             EditContentForm, SearchMovies, SearchTVShows,
                             SearchBooks, SearchYoutube)
-from subjects.filters import ContentFilter, ContentBookmarkFilter, ContentTagFilter
+from subjects.filters import (ContentFilter, ContentBookmarkFilter,
+                              ContentTagFilter, ContentTopicFilter)
 from subjects.models import Subject, Content
 from common.models import Tag
 from users.models import BucketUser
@@ -263,4 +264,17 @@ class ViewTagContent(FilterView):
         context = super(ViewTagContent, self).get_context_data(**kwargs)
         self.tag = get_object_or_404(Tag, slug=self.kwargs['slug'])
         context['tag'] = self.tag
+        return context
+
+
+class ViewTopicContent(FilterView):
+    """View all content of a topic"""
+    model = Content
+    template_name = "subjects/topic_content.html"
+    filterset_class = ContentTopicFilter
+
+    def get_context_data(self, **kwargs):
+        context = super(ViewTopicContent, self).get_context_data(**kwargs)
+        self.topic = get_object_or_404(Topic, slug=self.kwargs['slug'])
+        context['topic'] = self.topic
         return context
