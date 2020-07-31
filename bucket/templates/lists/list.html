@@ -9,10 +9,30 @@
   <div class="row mt40">
     <div class="col-sm-12">
       <h1>
+        {% if list.name == 'Bookmarks' %}
+        {{ list_user }}'s Bookmarks
+        {% else %}
         {{ list.name }}
+        {% endif %}
+
+        {% if bucketuser != list.user %}
         {% include 'lists/snippets/bookmark_list.html' %}
+        {% else %}
+        <a class="btn text-muted">
+          {% if list.visibility == 'private' %}
+          <i class="fas fa-lock"></i>
+          {% else %}
+          <i class="fas fa-lock-open"></i>
+          {% endif %}
+        </a>
+        {% endif %}
         {% if bucketuser == list.user %}
         <span class="right">
+          {% if list.name != 'Bookmarks' %}
+          <a class="btn" href="{% url 'add_to_list_from_list_page' list.slug %}">
+            <i class="fas fa-plus"></i>
+          </a>
+          {% endif %}
           <a class="btn" href="{% url 'edit_list' list.slug %}"><i class="fas fa-pencil-alt"></i></a>
           <a class="btn" href="{% url 'delete_list' list.slug %}"><i class="fas fa-trash-alt"></i></a>
         </span>
@@ -27,11 +47,7 @@
         {{ number_of_items }} items &nbsp;
         <!-- Button trigger modal -->
         <span type="button" data-toggle="modal" data-target="#exampleModalCenter">
-          {% if number_of_bookmarks == 1 %}
-          {{ number_of_bookmarks }} bookmark
-          {% else %}
-          {{ number_of_bookmarks }} bookmarks
-          {% endif %}
+          {{ number_of_bookmarks }} bookmark{{ number_of_bookmarks|pluralize }}
         </span>
       </p>
 
@@ -52,9 +68,11 @@
         </div>
       </div>
 
-      {% for content in list_content %}
-      {% include 'subjects/snippets/content_card.html' %}
-      {% endfor %}
+      <div class="col-md-8 offset-md-2">
+        {% for content in list_content %}
+        {% include 'subjects/snippets/content_card.html' %}
+        {% endfor %}
+      </div>
     </div>
   </div>
 </div>

@@ -33,15 +33,11 @@
                 <a class="card-link" href="#">{{ book.title }}</a>
               </h3>
               <p>
-                {% for author in book.author_name %}
-                {{ author }}{% if not forloop.last %},{% endif %}
-                {% endfor %}
+                {{ content.author_name | join:", " }}
                 ({{ book.first_publish_year }})
               </p>
               <p class="text-muted small">
-                {% for subject in book.subject %}
-                {{ subject }}&nbsp;&nbsp;
-                {% endfor %}
+                {{ book.subject | join:"&nbsp;&nbsp;" }}
               </p>
             </div>
           </div>

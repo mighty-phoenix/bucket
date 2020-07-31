@@ -10,16 +10,16 @@
         <div class="form-inline d-flex justify-content-center">
           <div class="form-group mx-sm-3 mb-2">
             {{ filter.form.title | as_crispy_field }}
+            <button class="btn" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+              <i class="fas fa-filter"></i>
+            </button>
+            <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
           </div>
-          <button class="btn mb-2" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-            <i class="fas fa-filter"></i>
-          </button>
-          <button type="submit" class="btn btn-primary mb-2"><i class="fa fa-search"></i></button>
         </div>
 
         <div class="collapse" id="collapseExample">
           <div class="card card-body">
-            <p>Types</p>
+            <p>Type</p>
             <div class="form-group">
               {% for checkbox in filter.form.type %}
               <div class="form-check form-check-inline">
@@ -29,9 +29,19 @@
               </div>
               {% endfor %}
             </div>
-            <p>Tags</p>
+            <p>Genre</p>
             <div class="form-group">
               {% for checkbox in filter.form.tags %}
+              <div class="form-check form-check-inline">
+                <label class="form-check-label">
+                {{ checkbox.tag }} {{ checkbox.choice_label }}
+                </label>
+              </div>
+              {% endfor %}
+            </div>
+            <p>Topic</p>
+            <div class="form-group">
+              {% for checkbox in filter.form.topics %}
               <div class="form-check form-check-inline">
                 <label class="form-check-label">
                 {{ checkbox.tag }} {{ checkbox.choice_label }}

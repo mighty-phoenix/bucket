@@ -1,7 +1,6 @@
 import tagulous.models
 from django.db import models
 from django.utils.text import slugify
-from django.contrib.contenttypes.fields import GenericRelation
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from urllib.parse import urlparse
@@ -33,6 +32,7 @@ class Content(models.Model):
     title = models.CharField(max_length=255, verbose_name="Title")
     slug = models.SlugField(max_length=150, unique=True, editable=False, verbose_name="Slug")
     url = models.URLField(blank=True, null=True, default='', verbose_name="URL")
+    content_id = models.CharField(max_length=255)
     type = models.CharField(max_length=150,
                             choices=media_types,
                             default='other',
@@ -55,14 +55,13 @@ class Content(models.Model):
         return self.title
 
     def save(self, *args, **kwargs):
-        slug = slugify(self.title, allow_unicode=True)
-        self.slug = str(self.pk) + '-' + slug
+        self.slug = str(self.content_id) + '-' + slugify(self.title)
         super().save(*args, **kwargs)
 
     def url_text(self):
-        if self.content_url and '//' not in self.content_url:
-            self.content_url = '%s%s' % ('https://', self.content_url)
-        parsed_url = urlparse(self.content_url)
+        if self.url and '//' not in self.url:
+            self.url = '%s%s' % ('https://', self.url)
+        parsed_url = urlparse(self.url)
         if parsed_url.hostname:
             return parsed_url.hostname.replace("www.", "") + "/..."
         else:

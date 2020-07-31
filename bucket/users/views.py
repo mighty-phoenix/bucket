@@ -1,12 +1,18 @@
 from django.contrib.auth.models import User
+from django.urls import reverse
 from django.shortcuts import get_object_or_404
-from django.views.generic import TemplateView
+from django.views.generic.base import TemplateView, RedirectView
+from django.views.generic.detail import DetailView
 from django.views.generic.edit import UpdateView
 from braces.views import LoginRequiredMixin, MultiplePermissionsRequiredMixin
+from django_filters.views import FilterView
 
+from subjects.filters import ContentBookmarkFilter
+from subjects.models import Content
+from users.mixins import UserMixin
 from users.forms import UserForm
 from users.models import BucketUser
-from subjects.models import Subject, Content
+from lists.views import ViewList
 from lists.models import List
 
 
@@ -20,9 +26,13 @@ class UserView(LoginRequiredMixin, TemplateView):
         username = context['username']
         bucketuser = get_object_or_404(BucketUser, user__username=username)
         context['bucketuser'] = bucketuser
-        context['bookmarks'] = bucketuser.content_bookmark.all()
-        context['user_lists'] = bucketuser.list_set.all()
         context['bookmarked_lists'] = bucketuser.list_bookmark.all()
+        # If viewing aanother user's profile, show only public lists
+        request_bucketuser = get_object_or_404(BucketUser, user=self.request.user)
+        if request_bucketuser == bucketuser:
+            context['user_lists'] = bucketuser.list_set.all()
+        else:
+            context['user_lists'] = bucketuser.list_set.filter(visibility='public')
         return context
 
 
@@ -66,3 +76,34 @@ class UserProfileView(LoginRequiredMixin, MultiplePermissionsRequiredMixin,
         permissions.extend([request.user.is_superuser])
         permissions.extend([request.user == self.user])
         return any(permissions)
+
+
+#https://stackoverflow.com/questions/35796195/how-to-redirect-to-previous-page-in-django-after-post-request
+class BookmarkContentView(LoginRequiredMixin, RedirectView):
+    """Bookmark content"""
+    model = BucketUser
+
+    def get_redirect_url(self, *args, **kwargs):
+        user = self.request.user
+        bucketuser = get_object_or_404(BucketUser, user=user)
+        content = get_object_or_404(Content, slug=self.kwargs['slug'])
+        if content in bucketuser.content_bookmark.all():
+            bucketuser.content_bookmark.remove(content)
+        else:
+            bucketuser.content_bookmark.add(content)
+        return self.request.GET.get('next', reverse('view_content', kwargs={'slug': content.slug}))
+
+
+class AllBookmarksView(LoginRequiredMixin, ViewList):
+    """View list of all bookmarks"""
+    model = List
+    template_name = "lists/list.html"
+
+    def get_object(self, queryset=None):
+        user = self.request.user
+        bucketuser = get_object_or_404(BucketUser, user=user)
+        try:
+            self.object = List.objects.get(user=bucketuser, name='Bookmarks')
+        except List.DoesNotExist:
+            self.object = List.objects.create(user=bucketuser, name='Bookmarks')
+        return self.object

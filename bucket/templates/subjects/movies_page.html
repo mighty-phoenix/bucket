@@ -42,12 +42,19 @@
       <div class="card border-light mb-3">
         <div class="card-body">
           <div class="row">
-            <div class="col-2">
+            <div class="col-3">
               <img class="card-image img-fluid" src='https://image.tmdb.org/t/p/w600_and_h900_bestv2{{ movie.poster_path }}' onerror="this.src='https://dummyimage.com/600x900/ababab/ffffff.png&amp;text=+Poster'"/>
             </div>
-            <div class="col-10 left">
+            <div class="col-9 left">
               <h3 class="card-title">
                 <a class="card-link" href="#">{{ movie.title }}</a>
+                {% with content=movie type='movie' %}
+                <div class="right">
+                  <a class="btn" href="{% url 'add_to_database' type content.id %}?next={{ request.path }}">
+                    <i class="fa fa-plus"></i>
+                  </a>
+                </div>
+                {% endwith %}
               </h3>
               <p>{{ movie.overview | linebreaks }}</p>
               <p class="text-muted small">

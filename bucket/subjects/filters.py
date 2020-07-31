@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 
 from subjects.constants import media_types
 from subjects.models import Content
-from common.models import Tag
+from common.models import Tag, Topic
 from users.models import BucketUser
 
 
@@ -15,10 +15,12 @@ class ContentFilter(django_filters.FilterSet):
         widget=forms.CheckboxSelectMultiple)
     tags = django_filters.ModelMultipleChoiceFilter(queryset=Tag.objects.all(),
         widget=forms.CheckboxSelectMultiple)
+    topics = django_filters.ModelMultipleChoiceFilter(queryset=Topic.objects.all(),
+        widget=forms.CheckboxSelectMultiple)
 
     class Meta:
         model = Content
-        fields = ['title', 'type', 'tags', ]
+        fields = ['title', 'type', 'tags', 'topics', ]
 
 
 class ContentBookmarkFilter(django_filters.FilterSet):
@@ -28,10 +30,12 @@ class ContentBookmarkFilter(django_filters.FilterSet):
         widget=forms.CheckboxSelectMultiple)
     tags = django_filters.ModelMultipleChoiceFilter(queryset=Tag.objects.all(),
         widget=forms.CheckboxSelectMultiple)
+    topics = django_filters.ModelMultipleChoiceFilter(queryset=Topic.objects.all(),
+        widget=forms.CheckboxSelectMultiple)
 
     class Meta:
         model = Content
-        fields = ['title', 'type', 'tags', ]
+        fields = ['title', 'type', 'tags', 'topics', ]
 
     @property
     def qs(self):
@@ -47,10 +51,12 @@ class ContentTagFilter(django_filters.FilterSet):
         widget=forms.TextInput(attrs={'placeholder': 'Search'}))
     type = django_filters.MultipleChoiceFilter(label='', choices=media_types,
         widget=forms.CheckboxSelectMultiple)
+    topics = django_filters.ModelMultipleChoiceFilter(queryset=Topic.objects.all(),
+        widget=forms.CheckboxSelectMultiple)
 
     class Meta:
         model = Content
-        fields = ['title', 'type', ]
+        fields = ['title', 'type', 'topics', ]
 
     @property
     def qs(self):
@@ -66,10 +72,12 @@ class ContentTopicFilter(django_filters.FilterSet):
         widget=forms.TextInput(attrs={'placeholder': 'Search'}))
     type = django_filters.MultipleChoiceFilter(label='', choices=media_types,
         widget=forms.CheckboxSelectMultiple)
+    tags = django_filters.ModelMultipleChoiceFilter(queryset=Tag.objects.all(),
+        widget=forms.CheckboxSelectMultiple)
 
     class Meta:
         model = Content
-        fields = ['title', 'type', ]
+        fields = ['title', 'type', 'tags', ]
 
     @property
     def qs(self):

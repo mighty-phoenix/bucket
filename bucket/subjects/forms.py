@@ -2,7 +2,7 @@ from django import forms
 
 from common.forms import ModelFormWithHelper
 from common.helpers import SubmitCancelFormHelper
-from subjects.constants import movie_genres, tv_genres
+from subjects.constants import media_types, movie_genres, tv_genres
 from subjects.models import Subject, Content
 from users.models import BucketUser
 
@@ -41,6 +41,12 @@ class EditContentForm(ModelFormWithHelper):
         fields = ('title', 'type', 'description', 'url', 'tags', 'topics')
         helper_class = SubmitCancelFormHelper
         helper_cancel_href = "{% url 'view_content' content.slug %}"
+
+
+class SearchExternalDataForm(forms.Form):
+    global_search = forms.CharField(label='', required=False,
+        widget=forms.TextInput(attrs={'placeholder': 'Search'}))
+    media_type = forms.ChoiceField(label='', choices=media_types)
 
 
 class SearchMovies(forms.Form):

@@ -1,15 +1,28 @@
 <div class="card border-light mb-3">
-  <div class="card-body left">
-    <h3 class="card-title">
-      <a class="card-link" href="{% url 'view_list' list.slug %}">{{ list.name }}</a>
-      {% url 'lists_page' as url %}
-      {% if url == request.path %}
-      <div class="right">
-        {% include 'lists/snippets/bookmark_list.html' %}
+  <div class="card-body">
+    <div class="row">
+      <div class="col-sm-4 col-lg-3">
+        {% if list.image %}
+        <img class="card-image img-fluid" src="{{ list.image_thumbnail.url }}" style="width: 100px" />
+        {% else %}
+        <img class="card-image img-fluid" src="{{ '/static/img/cover.png' }}" style="width: 100px" />
+        {% endif %}
       </div>
-      {% endif %}
-    </h3>
-    <p class="card-text"><em>created by {{ list.user }}</em></p>
-    <p>{{ list.description | linebreaks }}</p>
+      <div class="col-sm-8 col-lg-9 left">
+        <h3 class="card-title">
+          <a class="card-link" href="{% url 'view_list' list.slug %}">{{ list.name | truncatechars:14 }}</a>
+          <div class="right">
+            {% include 'lists/snippets/bookmark_list.html' %}
+          </div>
+        </h3>
+        <p class="card-text"><em>created by {{ list.user }}</em></p>
+        <p class="card-text">
+          {{ list.content.all | join:", " | truncatechars:30 }}
+        </p>
+        {% for topic in list.topics.all %}
+        <a class="text-muted small inline" href="{{ topic.get_absolute_url }}">{{ topic }}</a>
+        {% endfor %}
+      </div>
+    </div>
   </div>
 </div>

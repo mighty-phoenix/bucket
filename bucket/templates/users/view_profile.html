@@ -5,7 +5,7 @@
 {% block title %} - Profile of {{ bucketuser }}{% endblock %}
 
 {% block content %}
-  <div class="mt40"></div>
+<div class="container col-lg-10 col-lg-offset-1 mt40">
   <div class="row">
     <div class="col-sm-3 col-lg-2">
       {% if bucketuser.profile_picture.name and bucketuser.profile_picture.name != "False" %}
@@ -24,61 +24,100 @@
     <div class="col-sm-9 col-lg-10">
       <h2>{{ bucketuser }}</h2>
       {% if user == bucketuser.user or user.is_superuser %}
+      <div class="right">
         <a href="{% url 'user_profile' bucketuser.user.username %}"
-           role="button" class="btn right">Edit profile</a>
+           role="button" class="btn">Edit profile</a>
+      </div>
       {% endif %}
-      <p>
-        <span class="glyphicon glyphicon-envelope"></span>
-        {{ bucketuser.user.email|urlize }}
-      </p>
       <hr/>
       <p>{{ bucketuser.bio }}</p>
     </div>
   </div>
   <div class="mb40"></div>
-  <div class="row">
-    <div class="col-md-9">
-      <div class="card border-light mb-3">
-        <div class="card-header left">
-          Bookmarks
-          <div class="small right">
-            <a href="{% url 'all_bookmarks' %}">View All</a>
-          </div>
+  <div>
+    <ul class="nav nav-tabs nav-justified" id="profileTab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link active" id="lists-tab" data-toggle="tab" href="#lists" role="tab" aria-controls="lists" aria-selected="true">Lists</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="paths-tab" data-toggle="tab" href="#paths" role="tab" aria-controls="paths" aria-selected="false">Paths</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="saved-tab" data-toggle="tab" href="#saved" role="tab" aria-controls="saved" aria-selected="false">Saved</a>
+      </li>
+    </ul>
+  </div>
+  <div class="tab-content" id="profileTabContent">
+    <div class="tab-pane fade show active" id="lists" role="tabpanel" aria-labelledby="lists-tab">
+      <div class="col-md-8 offset-md-2 mt40">
+        <div class="small right">
+          <a href="{% url 'all_user_lists' bucketuser.user.username %}">View All</a>
         </div>
-        <div class="card-group profile-card-group">
-          <div class="row profile-row">
-            {% for bookmark in bookmarks %}
-            <div class="col mb-3 mt-3">
-              <div class="card border-light text-center h-100">
-                <h5 class="card-title">
-                  <a class="card-link" href="{% url 'view_content' bookmark.slug %}">{{ bookmark.title }}</a>
-                </h5>
-                <p class="card-subtitle"><em>{{ bookmark.creator }}</em></p>
-                <a class="card-link" href="{{ bookmark.content_url }}" target="_blank">{{ bookmark.url_text }}</a>
-              </div>
-            </div>
-            {% endfor %}
-          </div>
+        <div>
+          <a href="{% url 'add_list' %}">Create a list</a>
         </div>
+        {% for list in user_lists %}
+        {% include 'lists/snippets/list_card.html' %}
+        {% endfor %}
       </div>
+    </div>
+    <div class="tab-pane fade" id="paths" role="tabpanel" aria-labelledby="paths-tab">
+      ...
+    </div>
+    <div class="tab-pane fade" id="saved" role="tabpanel" aria-labelledby="saved-tab">
+      <div class="col-md-8 offset-md-2 mt40">
+        <div class="small right">
+          <a href="{% url 'all_bookmarked_lists' bucketuser.user.username %}">View All</a>
+        </div>
+        <br>
+        {% for list in bookmarked_lists %}
+        {% include 'lists/snippets/list_card.html' %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% comment %}
+  <div class="mb40"></div>
+  <div class="row">
+    <div class="col-md-4">
       <div class="card border-light mb-3">
         <div class="card-header left">
           My Lists
           <div class="small right">
-            <a href="{% url 'all_user_lists' %}">View All</a>
+            <a href="{% url 'all_user_lists' bucketuser.user.username %}">View All</a>
           </div>
+        </div>
+        <div class="right">
+          <a href="{% url 'add_list' %}">Create a list</a>
         </div>
         <div class="card-body">
           {% for list in user_lists %}
-            <a class="card-link" href="{% url 'view_list' list.slug %}">{{ list.name }}</a>
+          <a class="card-link" href="{% url 'view_list' list.slug %}">{{ list.name }}</a>
           {% endfor %}
         </div>
       </div>
+    </div>
+    <div class="col-md-4">
       <div class="card border-light mb-3">
         <div class="card-header left">
-          Bookmarked Lists
+          Bookmarks
           <div class="small right">
-            <a href="{% url 'all_bookmarked_lists' %}">View All</a>
+            <a href="{% url 'all_bookmarks' bucketuser.user.username %}">View All</a>
+          </div>
+        </div>
+        <div class="card-body">
+          {% for bookmark in bookmarks %}
+          <a class="card-link" href="{% url 'view_content' bookmark.slug %}">{{ bookmark.title }}</a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-light mb-3">
+        <div class="card-header left">
+          Saved
+          <div class="small right">
+            <a href="{% url 'all_bookmarked_lists' bucketuser.user.username %}">View All</a>
           </div>
         </div>
         <div class="card-body">
@@ -88,12 +127,13 @@
         </div>
       </div>
     </div>
-    <div class="col-md-3">
-      <ul>
-      <a href="{% url 'add_content' %}" role="button" class="btn">Add content</a>
-      <a href="{% url 'add_list' %}" role="button" class="btn">Create a list</a>
-      </ul>
-      <div class="mb40"></div>
-    </div>
   </div>
+  <div>
+    <ul>
+    <a href="{% url 'add_content' %}" role="button" class="btn">Add content</a>
+    <a href="{% url 'add_list' %}" role="button" class="btn">Create a list</a>
+    </ul>
+    <div class="mb40"></div>
+  </div>
+  {% endcomment %}
 {% endblock %}

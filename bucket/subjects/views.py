@@ -1,6 +1,9 @@
 import os
 import requests
 import tmdbsimple as tmdb
+from tempfile import NamedTemporaryFile
+from urllib.request import urlopen
+from django.core.files import File
 from django.http import HttpResponse
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, render
@@ -14,18 +17,21 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django_filters.views import FilterView
 
+from users.mixins import UserListsMixin
 from subjects.constants import movie_genres, tv_genres
 from subjects.forms import (AddSubjectForm, EditSubjectForm, AddContentForm,
                             EditContentForm, SearchMovies, SearchTVShows,
-                            SearchBooks, SearchYoutube)
-from subjects.filters import (ContentFilter, ContentBookmarkFilter,
-                              ContentTagFilter, ContentTopicFilter)
+                            SearchBooks, SearchYoutube, SearchExternalDataForm)
+from subjects.filters import (ContentFilter, ContentTagFilter,
+                              ContentTopicFilter)
 from subjects.models import Subject, Content
-from common.models import Tag
+from common.models import Tag, Topic
 from users.models import BucketUser
+from lists.models import List
 
 
 tmdb.API_KEY = os.environ['TMDB_API_KEY']
+YOUTUBE_API_KEY = os.environ['YOUTUBE_API_KEY']
 
 
 class SubjectsList(ListView):
@@ -53,7 +59,6 @@ class SubjectPageView(ListView):
     def get_queryset(self, *args, **kwargs):
         self.subject = get_object_or_404(Subject, slug=self.kwargs['slug'])
         qs = Content.objects.filter(subject=self.subject).order_by('title')
-        #subject_content = filter_and_search_queryset(qs,self.request)
         return subject_content
 
     def get_context_data(self, **kwargs):
@@ -62,134 +67,23 @@ class SubjectPageView(ListView):
         return context
 
 
-class ContentsPage(FilterView):
+class ContentsPage(UserListsMixin, FilterView):
     """List all content"""
     model = Content
     template_name = "subjects/contents_page.html"
     filterset_class = ContentFilter
     #paginate_by = 10
 
-    def get_context_data(self, **kwargs):
-        context = super(FilterView, self).get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            user = self.request.user
-            context['bucketuser'] = get_object_or_404(BucketUser, user=user)
-        return context
 
-
-#https://github.com/coderIlluminatus/django-tmdb/blob/master/movies/views.py
-class MoviesPageView(FormView):
-    template_name = 'subjects/movies_page.html'
-    form_class = SearchMovies
-
-    def get_success_url(self):
-        return reverse('movies_page')
-
-    def get_context_data(self, **kwargs):
-        context = super(MoviesPageView, self).get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            user = self.request.user
-            context['bucketuser'] = get_object_or_404(BucketUser, user=user)
-        context['genres'] = movie_genres
-        search = self.request.GET.get('search')
-        genre = self.request.GET.getlist('genre')
-        if search != '' and search is not None:
-            movies = tmdb.Search().movie(query=search)['results']
-            genre = [ int(i) for i in genre ]
-            movies = [movie for movie in movies if set(genre) == set(genre).intersection(movie['genre_ids'])]
-            context['movies'] = sorted(movies, key=lambda x: x['popularity'], reverse=True)
-        else:
-            genre = ', '.join(genre)
-            movies = tmdb.Discover().movie(sort_by='popularity.desc', with_genres=genre)['results']
-            context['movies'] = movies
-        return context
-
-
-class TVShowsPageView(FormView):
-    template_name = 'subjects/tvshows_page.html'
-    form_class = SearchTVShows
-
-    def get_success_url(self):
-        return reverse('tvshows_page')
-
-    def get_context_data(self, **kwargs):
-        context = super(TVShowsPageView, self).get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            user = self.request.user
-            context['bucketuser'] = get_object_or_404(BucketUser, user=user)
-        context['genres'] = tv_genres
-        search = self.request.GET.get('search')
-        genre = self.request.GET.getlist('genre')
-        if search != '' and search is not None:
-            tvshows = tmdb.Search().tv(query=search)['results']
-            genre = [ int(i) for i in genre ]
-            tvshows = [show for show in tvshows if set(genre) == set(genre).intersection(show['genre_ids'])]
-            context['tvshows'] = sorted(tvshows, key=lambda x: x['popularity'], reverse=True)
-        else:
-            genre = ', '.join(genre)
-            tvshows = tmdb.Discover().tv(sort_by='popularity.desc', with_genres=genre)['results']
-            context['tvshows'] = tvshows
-        return context
-
-
-#https://openlibrary.org/developers/api
-#https://github.com/internetarchive/openlibrary-client
-class BooksPageView(FormView):
-    template_name = 'subjects/books_page.html'
-    form_class = SearchBooks
-
-    def get_success_url(self):
-        return reverse('books_page')
-
-    def get_context_data(self, **kwargs):
-        context = super(BooksPageView, self).get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            user = self.request.user
-            context['bucketuser'] = get_object_or_404(BucketUser, user=user)
-        search = self.request.GET.get('search')
-        if search != '' and search is not None:
-            url = 'http://openlibrary.org/search.json?title=' + search
-            books = requests.get(url).json()['docs']
-            context['books'] = books
-        return context
-
-
-class YoutubePageView(FormView):
-    template_name = 'subjects/youtube_page.html'
-    form_class = SearchYoutube
-
-    def get_success_url(self):
-        return reverse('youtube_page')
-
-    def get_context_data(self, **kwargs):
-        context = super(YoutubePageView, self).get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            user = self.request.user
-            context['bucketuser'] = get_object_or_404(BucketUser, user=user)
-        search = self.request.GET.get('search')
-        if search != '' and search is not None:
-            url = 'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=' \
-                  + search \
-                  + '&key=AIzaSyA3ghYFni1exM2g8QBdoDX3_jod4e_fJK8'
-            videos = requests.get(url).json()['items']
-            print(videos)
-            context['videos'] = videos
-        return context
-
-
-class ContentView(DetailView):
+class ContentView(UserListsMixin, DetailView):
     """View content page"""
     model = Content
     template_name = "subjects/content.html"
 
     def get_context_data(self, **kwargs):
         context = super(ContentView, self).get_context_data(**kwargs)
-        if self.request.user.is_authenticated:
-            user = self.request.user
-            bucketuser = get_object_or_404(BucketUser, user=user)
-            context['bucketuser'] = bucketuser
         context['content'] = self.object
-        context['number_of_bookmarks'] = self.object.bookmarked_by.all().count()
+        context['number_of_bookmarks'] = self.object.content_bookmarked_by.all().count()
         return context
 
 
@@ -229,32 +123,7 @@ class DeleteContentView(LoginRequiredMixin, DeleteView):
         return bucketuser.get_absolute_url()
 
 
-#https://stackoverflow.com/questions/35796195/how-to-redirect-to-previous-page-in-django-after-post-request
-class BookmarkContentView(LoginRequiredMixin, RedirectView):
-    """Bookmark content"""
-    model = Content
-    template_name = "subjects/bookmark.html"
-
-    def get_redirect_url(self, *args, **kwargs):
-        user = self.request.user
-        bucketuser = get_object_or_404(BucketUser, user=user)
-        content = get_object_or_404(Content, slug=self.kwargs['slug'])
-        if bucketuser in content.bookmarked_by.all():
-            content.bookmarked_by.remove(bucketuser)
-        else:
-            content.bookmarked_by.add(bucketuser)
-        return self.request.GET.get('next', reverse('view_content', kwargs={'slug': content.slug}))
-
-
-class AllBookmarksView(LoginRequiredMixin, FilterView):
-    """View list of all bookmarks"""
-    model = Content
-    template_name = "subjects/all_bookmarks.html"
-    filterset_class = ContentBookmarkFilter
-    #paginate_by = 10
-
-
-class ViewTagContent(FilterView):
+class ViewTagContent(UserListsMixin, FilterView):
     """View all content of a tag"""
     model = Content
     template_name = "subjects/tag_content.html"
@@ -267,7 +136,7 @@ class ViewTagContent(FilterView):
         return context
 
 
-class ViewTopicContent(FilterView):
+class ViewTopicContent(UserListsMixin, FilterView):
     """View all content of a topic"""
     model = Content
     template_name = "subjects/topic_content.html"
@@ -277,4 +146,202 @@ class ViewTopicContent(FilterView):
         context = super(ViewTopicContent, self).get_context_data(**kwargs)
         self.topic = get_object_or_404(Topic, slug=self.kwargs['slug'])
         context['topic'] = self.topic
+        return context
+
+
+class SearchExternalDataView(UserListsMixin, FormView):
+    template_name = 'subjects/search_external_data.html'
+    form_class = SearchExternalDataForm
+
+    def get_success_url(self):
+        return reverse('search_external_data')
+
+    def get_context_data(self, **kwargs):
+        context = super(SearchExternalDataView, self).get_context_data(**kwargs)
+        search = self.request.GET.get('global_search')
+        type = self.request.GET.get('media_type')
+        context['type'] = type
+        if search != '' and search is not None:
+            if type == 'movie':
+                movie_genres.update(tv_genres)
+                context['genres'] = movie_genres
+                movies = tmdb.Search().movie(query=search)['results']
+                context['contents'] = sorted(movies, key=lambda x: x['popularity'], reverse=True)
+            elif type == 'tv':
+                movie_genres.update(tv_genres)
+                context['genres'] = movie_genres
+                tvshows = tmdb.Search().tv(query=search)['results']
+                context['contents'] = sorted(tvshows, key=lambda x: x['popularity'], reverse=True)
+            elif type == 'book':
+                url = 'http://openlibrary.org/search.json?title=' + search
+                books = requests.get(url).json()['docs']
+                context['contents'] = books
+        return context
+
+
+class AddToDatabaseView(LoginRequiredMixin, RedirectView):
+    """Add data from external database to our database
+
+    # TODO: Add description for books
+    # TODO: Consider pre-downloading entire book database from openlibrary
+    """
+    model = Content
+
+    def get_redirect_url(self, *args, **kwargs):
+        id = self.kwargs['id']
+        type = self.kwargs['type']
+        if type == "movie" and not Content.objects.filter(type='movie', content_id=id).exists():
+            # get movie data from tmdb
+            movie = tmdb.Movies(id=id).info()
+            # create a new Content object
+            new_content = Content.objects.create(
+                title=movie['title'],
+                url='https://www.imdb.com/title/' + movie['imdb_id'],
+                content_id=id,
+                type='movie',
+                description=movie['overview']
+            )
+            # add tags
+            new_content.tags = [genre['name'] for genre in movie['genres']]
+            # add image
+            img_temp = NamedTemporaryFile(delete=True)
+            try:
+                img_temp.write(urlopen('https://image.tmdb.org/t/p/w600_and_h900_bestv2' + movie['poster_path']).read())
+                img_temp.flush()
+                new_content.image.save(f'{new_content.slug}.jpg', File(img_temp))
+            except:
+                pass
+            new_content.save()
+        elif type == "tv" and not Content.objects.filter(type='tv', content_id=id).exists():
+            # get tv show data from tmdb
+            tvshow = tmdb.TV(id=id).info(append_to_response='videos')
+            # create a new Content object
+            new_content = Content.objects.create(
+                title=tvshow['name'],
+                content_id=id,
+                type='tv',
+                description=tvshow['overview']
+            )
+            # add url
+            if tvshow['videos']['results']:
+                new_content.url='https://www.youtube.com/watch?v=' + tvshow['videos']['results'][0]['key']
+            # add tags
+            new_content.tags = [genre['name'] for genre in tvshow['genres']]
+            # add image
+            img_temp = NamedTemporaryFile(delete=True)
+            try:
+                img_temp.write(urlopen('https://image.tmdb.org/t/p/w600_and_h900_bestv2' + tvshow['poster_path']).read())
+                img_temp.flush()
+                new_content.image.save(f'{new_content.slug}.jpg', File(img_temp))
+            except:
+                pass
+            new_content.save()
+        elif type == "book" and not Content.objects.filter(type='book', content_id=id).exists():
+            # get book data from openlibrary
+            olid = 'OLID:' + id
+            url = 'http://openlibrary.org/book/' + id + '.json'
+            url = 'https://openlibrary.org/api/books?bibkeys=' + olid + '&jscmd=details&format=json'
+            book = requests.get(url).json()[olid]
+            # create a new Content object
+            new_content = Content.objects.create(
+                title=book['details']['title'],
+                content_id=id,
+                url=book['preview_url'],
+                type='book',
+            )
+            # add image
+            img_temp = NamedTemporaryFile(delete=True)
+            try:
+                img_temp.write(urlopen('https://covers.openlibrary.org/b/olid/' + id + '-M.jpg?default=false').read())
+                img_temp.flush()
+                new_content.image.save(f'{new_content.slug}.jpg', File(img_temp))
+            except:
+                pass
+            new_content.save()
+        return reverse('view_content', kwargs={"slug": new_content.slug})
+
+
+#https://github.com/coderIlluminatus/django-tmdb/blob/master/movies/views.py
+class MoviesPageView(UserListsMixin, FormView):
+    template_name = 'subjects/movies_page.html'
+    form_class = SearchMovies
+
+    def get_success_url(self):
+        return reverse('movies_page')
+
+    def get_context_data(self, **kwargs):
+        context = super(MoviesPageView, self).get_context_data(**kwargs)
+        context['genres'] = movie_genres
+        search = self.request.GET.get('search')
+        genre = self.request.GET.getlist('genre')
+        if search != '' and search is not None:
+            movies = tmdb.Search().movie(query=search)['results']
+            genre = [ int(i) for i in genre ]
+            movies = [movie for movie in movies if set(genre) == set(genre).intersection(movie['genre_ids'])]
+            context['movies'] = sorted(movies, key=lambda x: x['popularity'], reverse=True)
+        else:
+            genre = ', '.join(genre)
+            movies = tmdb.Discover().movie(sort_by='popularity.desc', with_genres=genre)['results']
+            context['movies'] = movies
+        return context
+
+
+class TVShowsPageView(UserListsMixin, FormView):
+    template_name = 'subjects/tvshows_page.html'
+    form_class = SearchTVShows
+
+    def get_success_url(self):
+        return reverse('tvshows_page')
+
+    def get_context_data(self, **kwargs):
+        context = super(TVShowsPageView, self).get_context_data(**kwargs)
+        context['genres'] = tv_genres
+        search = self.request.GET.get('search')
+        genre = self.request.GET.getlist('genre')
+        if search != '' and search is not None:
+            tvshows = tmdb.Search().tv(query=search)['results']
+            genre = [ int(i) for i in genre ]
+            tvshows = [show for show in tvshows if set(genre) == set(genre).intersection(show['genre_ids'])]
+            context['tvshows'] = sorted(tvshows, key=lambda x: x['popularity'], reverse=True)
+        else:
+            genre = ', '.join(genre)
+            tvshows = tmdb.Discover().tv(sort_by='popularity.desc', with_genres=genre)['results']
+            context['tvshows'] = tvshows
+        return context
+
+
+#https://openlibrary.org/developers/api
+#https://github.com/internetarchive/openlibrary-client
+class BooksPageView(UserListsMixin, FormView):
+    template_name = 'subjects/books_page.html'
+    form_class = SearchBooks
+
+    def get_success_url(self):
+        return reverse('books_page')
+
+    def get_context_data(self, **kwargs):
+        context = super(BooksPageView, self).get_context_data(**kwargs)
+        search = self.request.GET.get('search')
+        if search != '' and search is not None:
+            url = 'http://openlibrary.org/search.json?title=' + search
+            books = requests.get(url).json()['docs']
+            context['books'] = books
+        return context
+
+
+class YoutubePageView(UserListsMixin, FormView):
+    template_name = 'subjects/youtube_page.html'
+    form_class = SearchYoutube
+
+    def get_success_url(self):
+        return reverse('youtube_page')
+
+    def get_context_data(self, **kwargs):
+        context = super(YoutubePageView, self).get_context_data(**kwargs)
+        search = self.request.GET.get('search')
+        if search != '' and search is not None:
+            url = 'https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=25&q=' \
+                  + search + '&key=' + YOUTUBE_API_KEY
+            videos = requests.get(url).json()['items']
+            context['videos'] = videos
         return context

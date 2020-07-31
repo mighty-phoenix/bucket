@@ -28,9 +28,19 @@
 
         <div class="collapse" id="collapseExample">
           <div class="card card-body">
-            <p>Types</p>
+            <p>Type</p>
             <div class="form-group">
               {% for checkbox in filter.form.type %}
+              <div class="form-check form-check-inline">
+                <label class="form-check-label">
+                {{ checkbox.tag }} {{ checkbox.choice_label }}
+                </label>
+              </div>
+              {% endfor %}
+            </div>
+            <p>Genre</p>
+            <div class="form-group">
+              {% for checkbox in filter.form.tags %}
               <div class="form-check form-check-inline">
                 <label class="form-check-label">
                 {{ checkbox.tag }} {{ checkbox.choice_label }}

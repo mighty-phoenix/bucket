@@ -18,6 +18,7 @@
 
   {% load staticfiles %}
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
   <link href="{% static 'css/style.css' %}" rel="stylesheet">
   <script src="https://kit.fontawesome.com/841887053c.js" crossorigin="anonymous"></script>
 
@@ -34,10 +35,15 @@
 
   <div class="collapse navbar-collapse" id="navbarsExampleDefault">
     <ul class="navbar-nav mr-auto">
+      {% url 'search_external_data' as url %}
+      <li class="nav-item {% if url == request.path %}active{% endif %}">
+        <a class="nav-link" href="{{ url }}">Global search</a>
+      </li>
       {% url 'lists_page' as url %}
       <li class="nav-item {% if url == request.path %}active{% endif %}">
         <a class="nav-link" href="{{ url }}">Lists</a>
       </li>
+      {% comment %}
       {% url 'movies_page' as url %}
       <li class="nav-item {% if url == request.path %}active{% endif %}">
         <a class="nav-link" href="{{ url }}">Movies</a>
@@ -54,6 +60,7 @@
       <li class="nav-item {% if url == request.path %}active{% endif %}">
         <a class="nav-link" href="{{ url }}">Youtube</a>
       </li>
+      {% endcomment %}
     </ul>
     <ul class="navbar-nav">
       {% if user.is_authenticated and user.is_active %}
@@ -61,11 +68,11 @@
           <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ user }} <span class="caret"></span></a>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown01">
             <a class="dropdown-item {% if '/users/{{ user.username }}' in request.path %}active{% endif %}" href="{% url 'user' user.username %}">Profile</a>
-            {% url 'all_bookmarks' as url %}
+            {% url 'all_bookmarks' user.username as url %}
             <a class="dropdown-item {% if url == request.path %}active{% endif %}" href="{{ url }}">Bookmarks</a>
-            {% url 'all_user_lists' as url %}
+            {% url 'all_user_lists' user.username as url %}
             <a class="dropdown-item {% if url == request.path %}active{% endif %}" href="{{ url }}">My Lists</a>
-            {% url 'all_bookmarked_lists' as url %}
+            {% url 'all_bookmarked_lists' user.username as url %}
             <a class="dropdown-item {% if url == request.path %}active{% endif %}" href="{{ url }}">Bookmarked Lists</a>
             <hr>
             {% if user.is_staff %}
@@ -122,5 +129,6 @@
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
 
 </html>

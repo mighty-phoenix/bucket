@@ -17,22 +17,21 @@
         </span>
         {% endif %}
       </h1>
-      <em>{{ content.creator }}</em>
       <div class="mb40"></div>
-      {% if content.content_url %}
-      <p><a href="{{ content.content_url }}" target="_blank">{{ content.url_text }}</a></p>
+      {% if content.url %}
+      <p><a href="{{ content.url }}" target="_blank">{{ content.url_text }}</a></p>
       {% endif %}
       {% for tag in content.tags.all %}
       <a class="text-muted small inline" href="{{ tag.get_absolute_url }}">{{ tag }}</a>
       {% endfor %}
+      <br>
+      {% for topic in content.topics.all %}
+      <a class="text-muted small inline" href="{{ topic.get_absolute_url }}">{{ topic }}</a>
+      {% endfor %}
       <p class="text-muted small inline">
         <!-- Button trigger modal -->
         <span type="button" data-toggle="modal" data-target="#exampleModalCenter">
-          {% if number_of_bookmarks == 1 %}
-          {{ number_of_bookmarks }} bookmark
-          {% else %}
-          {{ number_of_bookmarks }} bookmarks
-          {% endif %}
+          {{ number_of_bookmarks }} bookmark{{ number_of_bookmarks|pluralize }}
         </span>
       </p>
 
@@ -42,7 +41,7 @@
           <div class="modal-content">
             <div class="modal-body text-center">
               <ul class="list-unstyled">
-                {% for user in content.bookmarked_by.all %}
+                {% for user in content.content_bookmarked_by.all %}
                 <li><a href="{{ user.get_absolute_url }}">{{ user }}</a></li>
                 {% empty %}
                 No bookmarks yet
@@ -54,7 +53,7 @@
       </div>
 
       {% include 'subjects/snippets/bookmark_content.html' %}
-      {% include 'subjects/snippets/add_to_list.html' %}
+      {% include 'lists/snippets/add_to_list_from_contents_page.html' %}
     </div>
   </div>
 </div>

@@ -3,9 +3,9 @@ media_types = [
     ('book', 'Book'),
     ('movie', 'Movie'),
     ('tv', 'TV Show'),
-    ('youtube_channel', 'Youtube Channel'),
-    ('youtube_video', 'Youtube Video'),
-    ('youtube_playlist', 'Youtube Playlist'),
+#    ('youtube_channel', 'Youtube Channel'),
+#    ('youtube_video', 'Youtube Video'),
+#    ('youtube_playlist', 'Youtube Playlist'),
     ('other', 'Other'),
 ]
 

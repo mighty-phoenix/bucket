@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-  {{ bucketuser }} - Lists
+  {{ list_user }} - Lists
 {% endblock %}
 
 {% load crispy_forms_tags %}
@@ -10,8 +10,10 @@
   <div class="row mt40">
     <div class="col-sm-12">
       <h1 class="text-center">
-        My Lists
+        {{ list_user }}'s Lists
+        {% if list_user == bucketuser %}
         <a class="btn btn-sm" href="{% url 'add_list' %}"><i class="fas fa-plus"></i></a>
+        {% endif %}
       </h1>
       <hr/>
     </div>
@@ -22,18 +24,18 @@
         <div class="form-inline d-flex justify-content-center">
           <div class="form-group mx-sm-3 mb-2">
             {{ filter.form.name | as_crispy_field }}
+            <button class="btn mb-2" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+              <i class="fas fa-filter"></i>
+            </button>
+            <button type="submit" class="btn btn-primary mb-2"><i class="fa fa-search"></i></button>
           </div>
-          <button class="btn mb-2" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-            <i class="fas fa-filter"></i>
-          </button>
-          <button type="submit" class="btn btn-primary mb-2"><i class="fa fa-search"></i></button>
         </div>
 
         <div class="collapse" id="collapseExample">
           <div class="card card-body">
-            <p>Tags</p>
+            <p>Topics</p>
             <div class="form-group">
-              {% for checkbox in filter.form.tags %}
+              {% for checkbox in filter.form.topics %}
               <div class="form-check form-check-inline">
                 <label class="form-check-label">
                 {{ checkbox.tag }} {{ checkbox.choice_label }}

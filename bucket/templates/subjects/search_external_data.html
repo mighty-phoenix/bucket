@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% load get_value_from_dict %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="container col-lg-10 offset-lg-1 mt40">
+  <div class="row mt40">
+    <div class="col-md-8 offset-md-2">
+
+      <form method="GET" action="{% url 'search_external_data' %}">
+        <div class="form-inline d-flex justify-content-center">
+          <div class="form-group mx-sm-3 mb-2">
+            {{ form.global_search | as_crispy_field }}
+          </div>
+          <div class="form-group mx-sm-3 mb-2">
+            {{ form.media_type | as_crispy_field }}
+          </div>
+          <button type="submit" class="btn btn-primary mb-2"><i class="fa fa-search"></i></button>
+        </div>
+      </form>
+
+      {% for content in contents %}
+      {% if type == 'movie' or type == 'tv' %}
+      <div class="card border-light mb-3">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-4 col-lg-3">
+              <img class="card-image img-fluid" src='https://image.tmdb.org/t/p/w600_and_h900_bestv2{{ content.poster_path }}' onerror="this.src='https://dummyimage.com/600x900/ababab/ffffff.png&amp;text=+Poster'"/>
+            </div>
+            <div class="col-sm-8 col-lg-9 left">
+              <h3 class="card-title">
+                <a class="card-link" href="#">
+                  {{ content.title }}{{ content.name }}
+                </a>
+                <div class="right">
+                  <a class="btn" href="{% url 'add_to_database' type content.id %}?next={{ request.path }}">
+                    <i class="fa fa-plus"></i>
+                  </a>
+                </div>
+              </h3>
+              <p class="text-muted small">
+                {% for id in content.genre_ids %}
+                {{ genres|get_value_from_dict:id }}&nbsp;
+                {% endfor %}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% elif type == 'book' %}
+      <div class="card border-light mb-3">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-sm-4 col-lg-3">
+              <img class="card-image img-fluid" src='https://covers.openlibrary.org/b/id/{{ content.cover_i }}-M.jpg?default=false' onerror="this.src='https://dummyimage.com/600x900/ababab/ffffff.png&amp;text=+Cover'" />
+            </div>
+            <div class="col-sm-8 col-lg-9 left">
+              <h3 class="card-title">
+                <a class="card-link" href="#">{{ content.title }}</a>
+                <div class="right">
+                  <a class="btn"
+                    {% if content.cover_edition_key %}
+                    href="{% url 'add_to_database' type content.cover_edition_key %}?next={{ request.path }}"
+                    {% else %}
+                    href="{% url 'add_to_database' type content.key|cut:'/works/' %}?next={{ request.path }}"
+                    {% endif %}>
+                    <i class="fa fa-plus"></i>
+                  </a>
+                </div>
+              </h3>
+              <p>
+                {{ content.author_name | join:", " }}
+                ({{ content.first_publish_year }})
+              </p>
+              <p class="text-muted small">
+                {{ book.subject | join:"&nbsp;&nbsp;" }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}
