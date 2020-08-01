@@ -1,3 +1,5 @@
+{% load static %}
+
 <div class="card border-light mb-3">
   <div class="card-body">
     <div class="row">
@@ -5,7 +7,7 @@
         {% if list.image %}
         <img class="card-image img-fluid" src="{{ list.image_thumbnail.url }}" style="width: 100px" />
         {% else %}
-        <img class="card-image img-fluid" src="{{ '/static/img/cover.png' }}" style="width: 100px" />
+        <img class="card-image img-fluid" src="{% static 'img/cover.png' %}" style="width: 100px" />
         {% endif %}
       </div>
       <div class="col-sm-8 col-lg-9 left">
