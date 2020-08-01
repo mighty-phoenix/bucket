@@ -47,7 +47,7 @@
           </div>
         </div>
       </div>
-      {% elif type == 'book' %}
+      {% elif type == 'book' and content.cover_edition_key %}
       <div class="card border-light mb-3">
         <div class="card-body">
           <div class="row">
@@ -58,12 +58,7 @@
               <h3 class="card-title">
                 <a class="card-link" href="#">{{ content.title }}</a>
                 <div class="right">
-                  <a class="btn"
-                    {% if content.cover_edition_key %}
-                    href="{% url 'add_to_database' type content.cover_edition_key %}?next={{ request.path }}"
-                    {% else %}
-                    href="{% url 'add_to_database' type content.key|cut:'/works/' %}?next={{ request.path }}"
-                    {% endif %}>
+                  <a class="btn" href="{% url 'add_to_database' type content.cover_edition_key %}?next={{ request.path }}">
                     <i class="fa fa-plus"></i>
                   </a>
                 </div>

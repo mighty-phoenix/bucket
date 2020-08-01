@@ -218,9 +218,10 @@ class AddToDatabaseView(LoginRequiredMixin, RedirectView):
             new_content.tags = [genre['name'] for genre in movie['genres']]
             # add image
             #https://timmyomahony.com/blog/upload-and-validate-image-from-url-in-django
-            image_url = 'https://image.tmdb.org/t/p/w600_and_h900_bestv2' + movie['poster_path']
-            django_file = get_django_file_from_image_url(image_url)
-            new_content.image.save(f'{new_content.slug}.jpg', django_file)
+            if movie['poster_path']:
+                image_url = 'https://image.tmdb.org/t/p/w600_and_h900_bestv2' + movie['poster_path']
+                django_file = get_django_file_from_image_url(image_url)
+                new_content.image.save(f'{new_content.slug}.jpg', django_file)
         elif type == "tv" and not Content.objects.filter(type='tv', content_id=id).exists():
             # get tv show data from tmdb
             tvshow = tmdb.TV(id=id).info(append_to_response='videos')
@@ -238,9 +239,10 @@ class AddToDatabaseView(LoginRequiredMixin, RedirectView):
             new_content.tags = [genre['name'] for genre in tvshow['genres']]
             # add image
             #https://timmyomahony.com/blog/upload-and-validate-image-from-url-in-django
-            image_url = 'https://image.tmdb.org/t/p/w600_and_h900_bestv2' + tvshow['poster_path']
-            django_file = get_django_file_from_image_url(image_url)
-            new_content.image.save(f'{new_content.slug}.jpg', django_file)
+            if tvshow['poster_path']:
+                image_url = 'https://image.tmdb.org/t/p/w600_and_h900_bestv2' + tvshow['poster_path']
+                django_file = get_django_file_from_image_url(image_url)
+                new_content.image.save(f'{new_content.slug}.jpg', django_file)
         elif type == "book" and not Content.objects.filter(type='book', content_id=id).exists():
             # get book data from openlibrary
             olid = 'OLID:' + id
