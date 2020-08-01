@@ -244,7 +244,6 @@ class AddToDatabaseView(LoginRequiredMixin, RedirectView):
         elif type == "book" and not Content.objects.filter(type='book', content_id=id).exists():
             # get book data from openlibrary
             olid = 'OLID:' + id
-            url = 'http://openlibrary.org/book/' + id + '.json'
             url = 'https://openlibrary.org/api/books?bibkeys=' + olid + '&jscmd=details&format=json'
             book = requests.get(url).json()[olid]
             # create a new Content object

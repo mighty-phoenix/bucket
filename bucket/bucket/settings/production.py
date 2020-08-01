@@ -4,6 +4,9 @@ import dj_database_url
 DEBUG = False
 TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
 
+# Activate Django-Heroku.
+django_heroku.settings(locals(), staticfiles=False)
+
 DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
 # Logging
