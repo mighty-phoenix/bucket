@@ -1,12 +1,12 @@
 import os
+import io
 import requests
 import tmdbsimple as tmdb
-from tempfile import NamedTemporaryFile
-from urllib.request import urlopen
-from django.core.files import File
+from PIL import Image
 from django.http import HttpResponse
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, render
+from django.core.files.base import ContentFile
 from django.views.generic.base import TemplateView, RedirectView
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
@@ -179,6 +179,18 @@ class SearchExternalDataView(UserListsMixin, FormView):
         return context
 
 
+def get_django_file_from_image_url(url):
+    # get image from URL
+    response = requests.get(url)
+    image = io.BytesIO(response.content)
+    # get PIL image
+    pil_image = Image.open(image)
+    # convert PIL image to django file
+    fobject = io.BytesIO()
+    pil_image.save(fobject, format="JPEG")
+    return ContentFile(fobject.getvalue())
+
+
 class AddToDatabaseView(LoginRequiredMixin, RedirectView):
     """Add data from external database to our database
 
@@ -190,6 +202,7 @@ class AddToDatabaseView(LoginRequiredMixin, RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         id = self.kwargs['id']
         type = self.kwargs['type']
+        new_content = None
         if type == "movie" and not Content.objects.filter(type='movie', content_id=id).exists():
             # get movie data from tmdb
             movie = tmdb.Movies(id=id).info()
@@ -204,14 +217,10 @@ class AddToDatabaseView(LoginRequiredMixin, RedirectView):
             # add tags
             new_content.tags = [genre['name'] for genre in movie['genres']]
             # add image
-            img_temp = NamedTemporaryFile(delete=True)
-            try:
-                img_temp.write(urlopen('https://image.tmdb.org/t/p/w600_and_h900_bestv2' + movie['poster_path']).read())
-                img_temp.flush()
-                new_content.image.save(f'{new_content.slug}.jpg', File(img_temp))
-            except:
-                pass
-            new_content.save()
+            #https://timmyomahony.com/blog/upload-and-validate-image-from-url-in-django
+            image_url = 'https://image.tmdb.org/t/p/w600_and_h900_bestv2' + movie['poster_path']
+            django_file = get_django_file_from_image_url(image_url)
+            new_content.image.save(f'{new_content.slug}.jpg', django_file)
         elif type == "tv" and not Content.objects.filter(type='tv', content_id=id).exists():
             # get tv show data from tmdb
             tvshow = tmdb.TV(id=id).info(append_to_response='videos')
@@ -228,14 +237,10 @@ class AddToDatabaseView(LoginRequiredMixin, RedirectView):
             # add tags
             new_content.tags = [genre['name'] for genre in tvshow['genres']]
             # add image
-            img_temp = NamedTemporaryFile(delete=True)
-            try:
-                img_temp.write(urlopen('https://image.tmdb.org/t/p/w600_and_h900_bestv2' + tvshow['poster_path']).read())
-                img_temp.flush()
-                new_content.image.save(f'{new_content.slug}.jpg', File(img_temp))
-            except:
-                pass
-            new_content.save()
+            #https://timmyomahony.com/blog/upload-and-validate-image-from-url-in-django
+            image_url = 'https://image.tmdb.org/t/p/w600_and_h900_bestv2' + tvshow['poster_path']
+            django_file = get_django_file_from_image_url(image_url)
+            new_content.image.save(f'{new_content.slug}.jpg', django_file)
         elif type == "book" and not Content.objects.filter(type='book', content_id=id).exists():
             # get book data from openlibrary
             olid = 'OLID:' + id
@@ -250,15 +255,15 @@ class AddToDatabaseView(LoginRequiredMixin, RedirectView):
                 type='book',
             )
             # add image
-            img_temp = NamedTemporaryFile(delete=True)
-            try:
-                img_temp.write(urlopen('https://covers.openlibrary.org/b/olid/' + id + '-M.jpg?default=false').read())
-                img_temp.flush()
-                new_content.image.save(f'{new_content.slug}.jpg', File(img_temp))
-            except:
-                pass
-            new_content.save()
-        return reverse('view_content', kwargs={"slug": new_content.slug})
+            #https://timmyomahony.com/blog/upload-and-validate-image-from-url-in-django
+            image_url = 'https://covers.openlibrary.org/b/olid/' + id + '-M.jpg?default=false'
+            django_file = get_django_file_from_image_url(image_url)
+            new_content.image.save(f'{new_content.slug}.jpg', django_file)
+        if new_content:
+            return reverse('view_content', kwargs={"slug": new_content.slug})
+        else:
+            content = Content.objects.filter(type=type, content_id=id)[0]
+            return reverse('view_content', kwargs={"slug": content.slug})
 
 
 #https://github.com/coderIlluminatus/django-tmdb/blob/master/movies/views.py
