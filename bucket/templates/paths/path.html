@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Path - {{ path.goal }}
+{% endblock %}
+
+{% block content %}
+<div class="container col-lg-10 col-lg-offset-1 mt40">
+  <div class="row mt40">
+    <div class="col-sm-12">
+      <h1>
+        {{ path.goal }}
+        <a class="btn text-muted">
+          {% if path.visibility == 'private' %}
+          <i class="fas fa-lock"></i>
+          {% else %}
+          <i class="fas fa-lock-open"></i>
+          {% endif %}
+        </a>
+        {% if bucketuser == path.user %}
+        <span class="right">
+          <a class="btn" href="{% url 'add_to_path' path.slug %}">
+            <i class="fas fa-plus"></i>
+          </a>
+          <a class="btn" href="{% url 'edit_path' path.slug %}"><i class="fas fa-pencil-alt"></i></a>
+          <a class="btn" href="{% url 'delete_path' path.slug %}"><i class="fas fa-trash-alt"></i></a>
+        </span>
+        {% endif %}
+      </h1>
+      <hr/>
+      <p>{{ path.description | linebreaks}}</p>
+      {% for topic in path.topics.all %}
+      <a class="text-muted small inline" href="{{ topic.get_absolute_url }}">{{ topic }}</a>
+      {% endfor %}
+      <p class="text-muted small inline">
+        {{ number_of_items }} items &nbsp;
+      </p>
+      <div class="col-md-8 offset-md-2">
+        {% for content in path_content %}
+        {% include 'subjects/snippets/content_card.html' %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

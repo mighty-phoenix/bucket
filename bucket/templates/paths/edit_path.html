@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}
+  Edit Path
+{% endblock %}
+
+{% load crispy_forms_tags %}
+{% block content %}
+  <div class="row mt40">
+    <div class="col-md-4 offset-md-4">
+      <h1>
+        Edit Path {{ path.goal }}
+      </h1>
+      <hr/>
+    </div>
+    <div class="col-md-4 offset-md-4">
+      {% crispy form %}
+    </div>
+  </div>
+{% endblock %}

@@ -9,33 +9,31 @@ from common.models import Topic
 from subjects.models import Content
 from users.models import BucketUser
 
-class List(models.Model):
-    """Content lists which can be created for each user."""
+
+class Path(models.Model):
+    """Paths"""
     user = models.ForeignKey(BucketUser, on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add=True)
-    name = models.CharField(max_length=255, verbose_name="Name")
+    goal = models.CharField(max_length=255, verbose_name="Goal")
     slug = models.SlugField(max_length=150, unique=True, editable=False, verbose_name="Slug")
     description = models.TextField(blank=True, verbose_name="Description")
-    image = models.ImageField(upload_to='list_images',
+    topics = tagulous.models.TagField(to=Topic, related_name='path_topic')
+    image = models.ImageField(upload_to='path_images',
                               blank=True,
                               null=True,
                               verbose_name="Image")
     image_thumbnail = ImageSpecField(source='image',
                                      processors=[ResizeToFill(100, 150)],
                                      options={'quality': 100})
-    content = models.ManyToManyField(Content,
-                                     blank=True,
-                                     related_name='content',
-                                     verbose_name='Content')
+    content = models.ManyToManyField(Content, through='PathContent',
+                                     blank=True, related_name='path_content')
     visibility = models.CharField(max_length=150,
                                   choices=visibility,
                                   default='public',
                                   verbose_name="Visibility")
-    topics = tagulous.models.TagField(to=Topic, related_name='list_topic')
-    list_bookmarked_by = models.ManyToManyField(BucketUser, related_name='list_bookmark')
 
     class Meta:
-        ordering = ['name']
+        ordering = ['goal']
 
     def __str__(self):
         return "{0} by {1}".format(self.name, self.user)
@@ -43,6 +41,14 @@ class List(models.Model):
     def save(self, *args, **kwargs):
         self.slug = add_slug(self)
         super().save(*args, **kwargs)
+
+
+class PathContent(models.Model):
+    """Content attached to a Path"""
+    path = models.ForeignKey(Path, on_delete=models.CASCADE)
+    content = models.ForeignKey(Content, on_delete=models.CASCADE)
+    date_added = models.DateTimeField(auto_now_add=True)
+    completed = models.BooleanField(default=False)
 
 
 # https://stackoverflow.com/questions/42429463/django-generating-random-unique-slug-field-for-each-model-object/43256732

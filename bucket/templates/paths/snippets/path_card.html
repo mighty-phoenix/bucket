@@ -1,0 +1,27 @@
+{% load static %}
+
+<div class="card border-light mb-3">
+  <div class="card-body">
+    <div class="row">
+      <div class="col-sm-4 col-lg-3">
+        {% if path.image %}
+        <img class="card-image img-fluid" src="{{ path.image_thumbnail.url }}" style="width: 100px" />
+        {% else %}
+        <img class="card-image img-fluid" src="{% static 'img/cover.png' %}" style="width: 100px" />
+        {% endif %}
+      </div>
+      <div class="col-sm-8 col-lg-9 left">
+        <h3 class="card-title">
+          <a class="card-link" href="{% url 'view_path' path.slug %}">{{ path.goal | truncatechars:14 }}</a>
+        </h3>
+        <p class="card-text"><em>created by {{ path.user }}</em></p>
+        <p class="card-text">
+          {{ path.description | truncatechars:30 }}
+        </p>
+        {% for topic in path.topics.all %}
+        <a class="text-muted small inline" href="{{ topic.get_absolute_url }}">{{ topic }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>

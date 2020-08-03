@@ -39,6 +39,10 @@
       <li class="nav-item {% if url == request.path %}active{% endif %}">
         <a class="nav-link" href="{{ url }}">Global search</a>
       </li>
+      {% url 'paths_page' as url %}
+      <li class="nav-item {% if url == request.path %}active{% endif %}">
+        <a class="nav-link" href="{{ url }}">Paths</a>
+      </li>
       {% url 'lists_page' as url %}
       <li class="nav-item {% if url == request.path %}active{% endif %}">
         <a class="nav-link" href="{{ url }}">Lists</a>
@@ -70,6 +74,8 @@
             <a class="dropdown-item {% if '/users/{{ user.username }}' in request.path %}active{% endif %}" href="{% url 'user' user.username %}">Profile</a>
             {% url 'all_bookmarks' user.username as url %}
             <a class="dropdown-item {% if url == request.path %}active{% endif %}" href="{{ url }}">Bookmarks</a>
+            {% url 'all_user_paths' user.username as url %}
+            <a class="dropdown-item {% if url == request.path %}active{% endif %}" href="{{ url }}">My Paths</a>
             {% url 'all_user_lists' user.username as url %}
             <a class="dropdown-item {% if url == request.path %}active{% endif %}" href="{{ url }}">My Lists</a>
             {% url 'all_bookmarked_lists' user.username as url %}

@@ -26,6 +26,5 @@ class UserMixin(ContextMixin):
         context = super(UserMixin, self).get_context_data(**kwargs)
         if self.request.user.is_authenticated:
             user = self.request.user
-            bucketuser = get_object_or_404(BucketUser, user=user)
-            context['bucketuser'] = bucketuser
+            context['bucketuser'] = get_object_or_404(BucketUser, user=user)
         return context

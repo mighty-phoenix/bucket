@@ -2,7 +2,6 @@ from django import forms
 
 from common.forms import ModelFormWithHelper
 from common.helpers import SubmitCancelFormHelper
-from subjects.models import Content
 from lists.models import List
 
 
