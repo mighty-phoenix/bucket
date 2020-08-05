@@ -116,3 +116,66 @@ class UserProfileViewTestCase(TestCase):
 
         self.assertContains(response, "Edit my profile")
         self.assertContains(response, "/users/bar/")
+
+
+class BookmarkContentViewTestCase(BaseTestCase, TestCase):
+    def test_view_bookmark_content_view(self):
+        """
+        Test Bookmark content view for
+        * correct http response and template
+        * user login
+        * user bookmark and unbookmark
+        * response for non existent url
+        """
+        url = reverse("bookmark_content", kwargs={'slug': '123456-test-content'})
+        # test response while logged out
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        # test response while logged in
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith('content/123456-test-content'))
+        self.assertEqual(list(self.content.content_bookmarked_by.all()), [])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith('content/123456-test-content'))
+        self.assertEqual(list(self.content.content_bookmarked_by.all()), [self.bucketuser])
+
+        # Test for non existent url
+        nonexistent_url = reverse("bookmark_content", kwargs={'slug': 'bazbaz'})
+        response = self.client.get(nonexistent_url)
+        self.assertEqual(response.status_code, 404)
+
+
+class AllBookmarksViewTestCase(BaseTestCase, TestCase):
+    def test_view_all_bookmarks_view(self):
+        """
+        Test all Bookmarks view for
+        * correct http response and template
+        * user login
+        * correct object list
+        """
+        url = reverse('all_bookmarks')
+        # test response while logged out
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        # test response while logged out
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'subjects/all_bookmarks.html')
+
+        # test object list
+        self.assertContains(response, "Test Content")
+        self.assertEqual(len(response.context['bookmark_list']), 1)
+        self.content2 = Content.objects.create(title="Content 2",
+                                               type=media_types[3][0])
+        self.content2.content_bookmarked_by.add(self.bucketuser)
+        response = self.client.get(url)
+        self.assertContains(response, "Content 2")
+        self.assertEqual(len(response.context['bookmark_list']), 2)
+        self.content.content_bookmarked_by.remove(self.bucketuser)
+        self.content2.content_bookmarked_by.remove(self.bucketuser)
+        response = self.client.get(url)
+        self.assertEqual(len(response.context['bookmark_list']), 0)

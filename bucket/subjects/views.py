@@ -59,7 +59,7 @@ class SubjectPageView(ListView):
     def get_queryset(self, *args, **kwargs):
         self.subject = get_object_or_404(Subject, slug=self.kwargs['slug'])
         qs = Content.objects.filter(subject=self.subject).order_by('title')
-        return subject_content
+        return qs
 
     def get_context_data(self, **kwargs):
         context = super(SubjectPageView, self).get_context_data(**kwargs)

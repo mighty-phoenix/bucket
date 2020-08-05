@@ -1,22 +1,25 @@
 from django.test import TestCase
-from django.contrib.auth.models import User
+from django.core.files import File
 
-from subjects.constants import CONTENT_TYPES
+from subjects.constants import media_types
 from subjects.models import Subject, Content
-from users.models import BucketUser
 
 class BaseTestCase(object):
     def setUp(self):
-        self.user = User.objects.create_user(username='foo', password='foobar')
-        self.bucketuser = BucketUser.objects.get(user=self.user)
-        self.subject = Subject.objects.create(name="Test Subject",
-                                              description="This is a test subject.")
-        self.content = Content.objects.create(title="Test Content",
-                                              type=CONTENT_TYPES[2],
-                                              creator="Foo Bar",
-                                              description="Test content description, this is.")
+        self.subject = Subject.objects.create(
+            name="Test Subject",
+            description="This is a test subject."
+        )
+        self.content = Content.objects.create(
+            title="Test Content",
+            content_id="123456",
+            type=media_types[2][0],
+            image=File(file=b""),
+            description="Test content description, this is.",
+            tags=['Action', 'Comedy'],
+            topics=['Strategy', 'Philosophy']
+        )
         self.content.subject.add(self.subject)
-        self.content.bookmarked_by.add(self.bucketuser)
 
 
 class SubjectTestCase(BaseTestCase, TestCase):
@@ -36,16 +39,16 @@ class ContentTestCase(BaseTestCase, TestCase):
 
     def test_slug(self):
         """Test Content slug"""
-        self.assertEqual(self.content.slug, "test-content")
+        self.assertEqual(self.content.slug, "123456-test-content")
 
     def test_url_text(self):
         """Test the representation of content url"""
         self.assertEqual(self.content.url_text(), "")
-        self.content.content_url = "https://www.foobar.com/cool"
+        self.content.url = "https://www.foobar.com/cool"
         self.assertEqual(self.content.url_text(), "foobar.com/...")
-        self.content.content_url = "www.foobar.com/cool"
+        self.content.url = "www.foobar.com/cool"
         self.assertEqual(self.content.url_text(), "foobar.com/...")
-        self.content.content_url = "foobar.com/cool"
+        self.content.url = "foobar.com/cool"
         self.assertEqual(self.content.url_text(), "foobar.com/...")
-        self.content.content_url = ""
+        self.content.url = ""
         self.assertEqual(self.content.url_text(), "")
