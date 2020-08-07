@@ -29,6 +29,6 @@ def update_path_image_on_remove(sender, **kwargs):
     if action == "post_remove" and len(instance.content.all()) != 0:
         content = Content.objects.get(pk=list(pk_set)[0])
         if instance.image == content.image or not instance.image:
-            content = instance.all()[0]
+            content = instance.content.all()[0]
             instance.image = content.image
             instance.save()

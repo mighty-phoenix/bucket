@@ -4,6 +4,7 @@
   Path - {{ path.goal }}
 {% endblock %}
 
+{% load static %}
 {% block content %}
 <div class="container col-lg-10 col-lg-offset-1 mt40">
   <div class="row mt40">
@@ -34,10 +35,34 @@
       {% endfor %}
       <p class="text-muted small inline">
         {{ number_of_items }} items &nbsp;
+        {{ percent_complete }}% completed
       </p>
       <div class="col-md-8 offset-md-2">
         {% for content in path_content %}
-        {% include 'subjects/snippets/content_card.html' %}
+
+        <div class="card border-light mb-3">
+          <div class="card-body">
+            <a class="card-link" href="{% url 'mark_completed' path.slug content.content.slug %}">
+              {% if content.completed %}
+              <i class="fas fa-check-square"></i>
+              {% else %}
+              <i class="far fa-square"></i>
+              {% endif %}
+            </a>
+            <a class="card-link" href="{% url 'view_content' content.content.slug %}">
+              {{ content.content.title }}
+            </a>
+            <p class="small right">
+              <em>{{ content.content.get_type_display }}</em>
+              {% if path.user == bucketuser %}
+              <a class="btn" href="{% url 'remove_from_path' path.slug content.content.slug %}"">
+                <i class="fas fa-minus-square"></i>
+              </a>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+
         {% endfor %}
       </div>
     </div>

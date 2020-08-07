@@ -208,18 +208,15 @@ class RemoveContentFromListView(LoginRequiredMixin, PermissionRequiredMixin,
     model = List
 
     def get_redirect_url(self, *args, **kwargs):
-        list = List.objects.get(slug=self.kwargs['slug'])
+        list = get_object_or_404(List, slug=self.kwargs['slug'])
         content = get_object_or_404(Content, slug=self.kwargs['content_slug'])
-        if content in list.content.all():
-            list.content.remove(content)
-        else:
-            list.content.add(content)
+        list.content.remove(content)
         return self.request.GET.get('next', reverse('view_list',
             kwargs={'slug': list.slug}))
 
     def check_permissions(self, request):
         """Check if the request user has the permission to remove content
         from the list."""
-        self.list = get_object_or_404(List, slug=self.kwargs['slug'])
+        list = get_object_or_404(List, slug=self.kwargs['slug'])
         bucketuser = get_object_or_404(BucketUser, user=request.user)
-        return bucketuser == self.list.user
+        return bucketuser == list.user

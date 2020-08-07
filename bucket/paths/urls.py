@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^(?P<slug>[\w-]+)/add-to-path/$', AddToPathView.as_view(),
         name='add_to_path'),
     url(r'^(?P<slug>[\w-]+)/remove-from-path/(?P<content_slug>[\w-]+)$',
-        RemoveContentFromPathView.as_view(),
-        name='remove_from_path'),
+        RemoveContentFromPathView.as_view(), name='remove_from_path'),
+    url(r'^(?P<slug>[\w-]+)/mark-completed/(?P<content_slug>[\w-]+)$',
+        MarkCompletedView.as_view(), name='mark_completed'),
 ]

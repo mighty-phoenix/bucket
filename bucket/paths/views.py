@@ -35,9 +35,12 @@ class ViewPath(UserMixin, DetailView):
         context = super(ViewPath, self).get_context_data(**kwargs)
         context['path'] = self.object
         context['path_user'] = self.object.user
-        path_content = self.object.content.all()
+        path_content = PathContent.objects.filter(path=self.object)
         context['path_content'] = path_content
         context['number_of_items'] = path_content.count()
+        completed = PathContent.objects.filter(path=self.object,
+            completed=True).count()
+        context['percent_complete'] = completed*100.0 / path_content.count()
         return context
 
 
@@ -152,18 +155,40 @@ class RemoveContentFromPathView(LoginRequiredMixin, PermissionRequiredMixin,
     model = Path
 
     def get_redirect_url(self, *args, **kwargs):
-        path = Path.objects.get(slug=self.kwargs['slug'])
+        path = get_object_or_404(Path, slug=self.kwargs['slug'])
         content = get_object_or_404(Content, slug=self.kwargs['content_slug'])
-        if content in path.content.all():
-            path.content.remove(content)
-        else:
-            path.content.add(content)
+        path.content.remove(content)
         return self.request.GET.get('next', reverse('view_path',
             kwargs={'slug': path.slug}))
 
     def check_permissions(self, request):
         """Check if the request user has the permission to remove content
         from the path."""
+        path = get_object_or_404(Path, slug=self.kwargs['slug'])
+        bucketuser = get_object_or_404(BucketUser, user=request.user)
+        return bucketuser == path.user
+
+
+class MarkCompletedView(LoginRequiredMixin, PermissionRequiredMixin,
+                        RedirectView):
+    """Mark path content as completed"""
+    model = Path
+
+    def get_redirect_url(self, *args, **kwargs):
+        path = Path.objects.get(slug=self.kwargs['slug'])
+        content = get_object_or_404(Content, slug=self.kwargs['content_slug'])
+        path_content = PathContent.objects.get(path=path, content=content)
+        if path_content.completed:
+            path_content.completed = False
+        else:
+            path_content.completed = True
+        path_content.save()
+        return self.request.GET.get('next', reverse('view_path',
+            kwargs={'slug': path.slug}))
+
+    def check_permissions(self, request):
+        """Check if the request user has the permission to mark path content
+        as completed."""
         self.path = get_object_or_404(Path, slug=self.kwargs['slug'])
         bucketuser = get_object_or_404(BucketUser, user=request.user)
         return bucketuser == self.path.user
