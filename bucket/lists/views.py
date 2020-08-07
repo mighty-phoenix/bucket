@@ -97,7 +97,8 @@ class DeleteListView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
     def get_success_url(self):
         """Redirect to user profile in case of successful deletion"""
         messages.add_message(self.request, messages.WARNING, "List deleted")
-        return reverse("all_user_lists")
+        return reverse("all_user_lists",
+            kwargs={'username': self.request.user.username})
 
     def check_permissions(self, request):
         """Check if the request user has the permission to delete the list."""

@@ -2,9 +2,9 @@ from django.contrib.auth.models import User
 from django.contrib import auth
 from django.urls import reverse
 from django.test import TestCase, Client
+from django.core.files import File
 
-from subjects.constants import CONTENT_TYPES
-from subjects.models import Subject, Content
+from subjects.models import Content
 from lists.models import List
 from users.models import BucketUser
 
@@ -13,12 +13,14 @@ class BaseTestCase(object):
     def setUp(self):
         self.user = User.objects.create_user(username='foo', password='foobar')
         self.bucketuser = BucketUser.objects.get(user=self.user)
-        self.content = Content.objects.create(title="Test Content",
-                                              type=CONTENT_TYPES[2][0],
-                                              creator="Foo Bar",
-                                              description="Test content description, this is.")
-        self.list = List.objects.create(user=self.bucketuser,
-                                        name="Test List")
+        self.content = Content.objects.create(title="Foo",
+                                              image=File(file=b""))
+        self.list = List.objects.create(
+            user=self.bucketuser,
+            name="Test List",
+            description="Testing for lists models.",
+            topics=['History', 'Philosophy']
+        )
         self.list.content.add(self.content)
         self.slug = self.list.slug
 
@@ -31,15 +33,16 @@ class ListsPageTestCase(BaseTestCase, TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'lists/lists_page.html')
         self.assertContains(response, "Test List")
-        self.assertEqual(len(response.context['lists']), 1)
+        self.assertEqual(len(response.context['filter'].qs), 1)
 
         self.user2 = User.objects.create_user(username='bar', password='foobar')
         self.bucketuser2 = BucketUser.objects.get(user=self.user2)
         self.list2 = List.objects.create(user=self.bucketuser2,
-                                         name="Baa Baa Black Sheep")
+                                         name="Lee Hyori")
+        url = reverse('lists_page')
         response = self.client.get(url)
-        self.assertContains(response, "Baa Baa Black Sheep")
-        self.assertEqual(len(response.context['lists']), 2)
+        self.assertContains(response, "Lee Hyori")
+        self.assertEqual(len(response.context['filter'].qs), 2)
 
 
 class ViewListTestCase(BaseTestCase, TestCase):
@@ -64,22 +67,22 @@ class ViewListTestCase(BaseTestCase, TestCase):
         # without user bookmarks
         self.assertEqual(list(response.context['list_bookmarked_by']), [])
         self.assertEqual(response.context['number_of_bookmarks'], 0)
-        self.assertEqual(response.context['is_bookmark'], False)
+        #self.assertEqual(response.context['is_bookmark'], False)
         # with user bookmarks
-        self.list.bookmarked_by.add(self.bucketuser)
+        self.list.list_bookmarked_by.add(self.bucketuser)
         response = self.client.get(url)
         self.assertEqual(list(response.context['list_bookmarked_by']),
                          [self.bucketuser])
         self.assertEqual(response.context['number_of_bookmarks'], 1)
-        self.assertEqual(response.context['is_bookmark'], False)
+        #self.assertEqual(response.context['is_bookmark'], False)
 
         # test view while logged in
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url)
-        self.assertEqual(response.context['is_bookmark'], True)
-        self.list.bookmarked_by.remove(self.bucketuser)
+        #self.assertEqual(response.context['is_bookmark'], True)
+        self.list.list_bookmarked_by.remove(self.bucketuser)
         response = self.client.get(url)
-        self.assertEqual(response.context['is_bookmark'], False)
+        #self.assertEqual(response.context['is_bookmark'], False)
 
         # test for nonexistent url
         nonexistent_url = reverse('view_list', kwargs={'slug': 'bar'})
@@ -120,7 +123,8 @@ class AddListViewTestCase(BaseTestCase, TestCase):
         self.assertEqual(response.status_code, 302)
         # test response while logged in
         self.client.login(username='foo', password='foobar')
-        data = {'name':'Baz', 'description': 'List for testing'}
+        data = {'name':'Baz', 'description': 'List for testing',
+                'topics':'Entertainment'}
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 302)
         new_list = List.objects.get(name='Baz', user=self.bucketuser)
@@ -177,7 +181,8 @@ class EditListViewTestCase(BaseTestCase, TestCase):
         self.assertEqual(response.status_code, 403)
         # test response while logged in
         self.client.login(username='foo', password='foobar')
-        data = {'name':'Bar', 'description': 'Yada Yada'}
+        data = {'name':'Bar', 'description':'Yada Yada',
+                'topics':'Entertainment', 'visibility':'private'}
         response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 302)
 
@@ -220,5 +225,104 @@ class DeleteListViewTestCase(BaseTestCase, TestCase):
         response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
 
-        # One list deleted, another list left initialized in BaseTestCase
-        self.assertSequenceEqual(List.objects.all(), [self.list])
+        # One list deleted, three lists left initialized in BaseTestCase
+        # including the default created Bookmarks and Recommendations
+        self.assertEqual(List.objects.all().count(), 3)
+
+
+class BookmarkListViewTestCase(BaseTestCase, TestCase):
+    def test_view_bookmark_list_view(self):
+        """Test Bookmark list view for
+        * correct http response and template
+        * user login
+        * user bookmark and unbookmark
+        * response for non existent url
+        """
+        url = reverse("bookmark_list", kwargs={'slug': self.slug})
+        # test response while logged out
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        # test response while logged in
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith(self.slug))
+        self.assertEqual(list(self.list.list_bookmarked_by.all()), [self.bucketuser])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.endswith(self.slug))
+        self.assertEqual(list(self.list.list_bookmarked_by.all()), [])
+
+        # Test for non existent url
+        nonexistent_url = reverse("bookmark_list", kwargs={'slug': 'bazbaz'})
+        response = self.client.get(nonexistent_url)
+        self.assertEqual(response.status_code, 404)
+
+
+'''
+class AllUserListsViewTestCase(BaseTestCase, TestCase):
+    def test_view_all_user_lists_view(self):
+        """
+        Test all user lists view for
+        * correct http response and template
+        * user login
+        * correct object list
+        """
+        url = reverse('all_user_lists', kwargs={'username': self.user.username})
+        # test response while logged out
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        # test response while logged in
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'lists/all_bookmarked_lists.html')
+
+        # test object list
+        self.assertContains(response, "Test List")
+        self.assertEqual(len(response.context['filter'].qs), 1)
+        self.list2 = Content.objects.create(user=self.bucketuser,
+                                            name="GaraGaraGo")
+        self.list2.list_bookmarked_by.add(self.bucketuser)
+        response = self.client.get(url)
+        self.assertContains(response, "GaraGaraGo")
+        self.assertEqual(len(response.context['filter'].qs), 2)
+        self.list.list_bookmarked_by.remove(self.bucketuser)
+        self.list2.list_bookmarked_by.remove(self.bucketuser)
+        response = self.client.get(url)
+        self.assertEqual(len(response.context['filter'].qs), 0)
+'''
+
+
+class AllBookmarkedListsViewTestCase(BaseTestCase, TestCase):
+    def test_view_all_bookmarked_lists_view(self):
+        """
+        Test all bookmarked lists view for
+        * correct http response and template
+        * user login
+        * correct object list
+        """
+        url = reverse('all_bookmarked_lists', kwargs={'username': self.user.username})
+        self.list.list_bookmarked_by.add(self.bucketuser)
+        # test response while logged out
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        # test response while logged in
+        self.client.login(username='foo', password='foobar')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'lists/all_bookmarked_lists.html')
+
+        # test object list
+        self.assertContains(response, "Test List")
+        self.assertEqual(len(response.context['filter'].qs), 1)
+        self.list2 = List.objects.create(user=self.bucketuser,
+                                            name="GaraGaraGo")
+        self.list2.list_bookmarked_by.add(self.bucketuser)
+        response = self.client.get(url)
+        self.assertContains(response, "GaraGaraGo")
+        self.assertEqual(len(response.context['filter'].qs), 2)
+        self.list.list_bookmarked_by.remove(self.bucketuser)
+        self.list2.list_bookmarked_by.remove(self.bucketuser)
+        response = self.client.get(url)
+        self.assertEqual(len(response.context['filter'].qs), 0)

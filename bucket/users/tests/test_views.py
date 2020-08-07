@@ -160,7 +160,7 @@ class AllBookmarksViewTestCase(BaseTestCase, TestCase):
         # test response while logged out
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
-        # test response while logged out
+        # test response while logged in
         self.client.login(username='foo', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
