@@ -10,9 +10,11 @@ from users.models import BucketUser
 
 class ListFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(label='', lookup_expr='icontains',
-        widget=forms.TextInput(attrs={'placeholder': 'Search'}))
-    topics = django_filters.ModelMultipleChoiceFilter(queryset=Topic.objects.all(),
-        widget=forms.CheckboxSelectMultiple)
+        widget=forms.TextInput(attrs={'placeholder': 'Search'}), max_length=150)
+    topics = django_filters.ModelMultipleChoiceFilter(
+        queryset=Topic.objects.all(),
+        widget=forms.CheckboxSelectMultiple
+    )
 
     class Meta:
         model = List
@@ -21,7 +23,8 @@ class ListFilter(django_filters.FilterSet):
     @property
     def qs(self):
         parent = super().qs
-        qs = parent.filter(visibility='public').exclude(name='Bookmarks').exclude(name='Recommendations')
+        qs = parent.filter(visibility='public')
+        qs = qs.exclude(name='Bookmarks').exclude(name='Recommendations')
         qs = qs.annotate(num_bookmarks=Count('list_bookmarked_by')).order_by('num_bookmarks')
 
         return qs
@@ -29,9 +32,11 @@ class ListFilter(django_filters.FilterSet):
 
 class UserListFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(label='', lookup_expr='icontains',
-        widget=forms.TextInput(attrs={'placeholder': 'Search'}))
-    topics = django_filters.ModelMultipleChoiceFilter(queryset=Topic.objects.all(),
-        widget=forms.CheckboxSelectMultiple)
+        widget=forms.TextInput(attrs={'placeholder': 'Search'}), max_length=150)
+    topics = django_filters.ModelMultipleChoiceFilter(
+        queryset=Topic.objects.all(),
+        widget=forms.CheckboxSelectMultiple
+    )
 
     class Meta:
         model = List
@@ -56,9 +61,11 @@ class UserListFilter(django_filters.FilterSet):
 
 class ListBookmarkFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(label='', lookup_expr='icontains',
-        widget=forms.TextInput(attrs={'placeholder': 'Search'}))
-    topics = django_filters.ModelMultipleChoiceFilter(queryset=Topic.objects.all(),
-        widget=forms.CheckboxSelectMultiple)
+        widget=forms.TextInput(attrs={'placeholder': 'Search'}), max_length=150)
+    topics = django_filters.ModelMultipleChoiceFilter(
+        queryset=Topic.objects.all(),
+        widget=forms.CheckboxSelectMultiple
+    )
 
     class Meta:
         model = List

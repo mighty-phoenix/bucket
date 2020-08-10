@@ -10,9 +10,11 @@ from users.models import BucketUser
 
 class PathFilter(django_filters.FilterSet):
     goal = django_filters.CharFilter(label='', lookup_expr='icontains',
-        widget=forms.TextInput(attrs={'placeholder': 'Search'}))
-    topics = django_filters.ModelMultipleChoiceFilter(queryset=Topic.objects.all(),
-        widget=forms.CheckboxSelectMultiple)
+        widget=forms.TextInput(attrs={'placeholder': 'Search'}), max_length=150)
+    topics = django_filters.ModelMultipleChoiceFilter(
+        queryset=Topic.objects.all(),
+        widget=forms.CheckboxSelectMultiple
+    )
 
     class Meta:
         model = Path
@@ -29,9 +31,11 @@ class PathFilter(django_filters.FilterSet):
 
 class UserPathFilter(django_filters.FilterSet):
     goal = django_filters.CharFilter(label='', lookup_expr='icontains',
-        widget=forms.TextInput(attrs={'placeholder': 'Search'}))
-    topics = django_filters.ModelMultipleChoiceFilter(queryset=Topic.objects.all(),
-        widget=forms.CheckboxSelectMultiple)
+        widget=forms.TextInput(attrs={'placeholder': 'Search'}), max_length=150)
+    topics = django_filters.ModelMultipleChoiceFilter(
+        queryset=Topic.objects.all(),
+        widget=forms.CheckboxSelectMultiple
+    )
 
     class Meta:
         model = Path

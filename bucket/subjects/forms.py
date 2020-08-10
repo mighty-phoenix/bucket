@@ -44,30 +44,30 @@ class EditContentForm(ModelFormWithHelper):
 
 
 class SearchExternalDataForm(forms.Form):
-    global_search = forms.CharField(label='', required=False,
+    global_search = forms.CharField(label='', required=False, max_length=150,
         widget=forms.TextInput(attrs={'placeholder': 'Search'}))
     media_type = forms.ChoiceField(label='', choices=media_types)
 
 
 class SearchMovies(forms.Form):
-    search = forms.CharField(label='', required=False,
+    search = forms.CharField(label='', required=False, max_length=150,
         widget=forms.TextInput(attrs={'placeholder': 'Search'}))
     genre = forms.MultipleChoiceField(label='', choices=list(movie_genres.items()),
         widget=forms.CheckboxSelectMultiple)
 
 
 class SearchTVShows(forms.Form):
-    search = forms.CharField(label='', required=False,
+    search = forms.CharField(label='', required=False, max_length=150,
         widget=forms.TextInput(attrs={'placeholder': 'Search'}))
     genre = forms.MultipleChoiceField(label='', choices=list(tv_genres.items()),
         widget=forms.CheckboxSelectMultiple)
 
 
 class SearchBooks(forms.Form):
-    search = forms.CharField(label='', required=False,
+    search = forms.CharField(label='', required=False, max_length=150,
         widget=forms.TextInput(attrs={'placeholder': 'Search'}))
 
 
 class SearchYoutube(forms.Form):
-    search = forms.CharField(label='', required=False,
+    search = forms.CharField(label='', required=False, max_length=150,
         widget=forms.TextInput(attrs={'placeholder': 'Search'}))

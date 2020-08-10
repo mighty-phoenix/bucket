@@ -10,13 +10,15 @@ from users.models import BucketUser
 
 class ContentFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(label='', lookup_expr='icontains',
-        widget=forms.TextInput(attrs={'placeholder': 'Search'}))
+        widget=forms.TextInput(attrs={'placeholder': 'Search'}), max_length=150)
     type = django_filters.MultipleChoiceFilter(label='', choices=media_types,
         widget=forms.CheckboxSelectMultiple)
     tags = django_filters.ModelMultipleChoiceFilter(queryset=Tag.objects.all(),
         widget=forms.CheckboxSelectMultiple)
-    topics = django_filters.ModelMultipleChoiceFilter(queryset=Topic.objects.all(),
-        widget=forms.CheckboxSelectMultiple)
+    topics = django_filters.ModelMultipleChoiceFilter(
+        queryset=Topic.objects.all(),
+        widget=forms.CheckboxSelectMultiple
+    )
 
     class Meta:
         model = Content
@@ -25,13 +27,15 @@ class ContentFilter(django_filters.FilterSet):
 
 class ContentBookmarkFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(label='', lookup_expr='icontains',
-        widget=forms.TextInput(attrs={'placeholder': 'Search'}))
+        widget=forms.TextInput(attrs={'placeholder': 'Search'}), max_length=150)
     type = django_filters.MultipleChoiceFilter(label='', choices=media_types,
         widget=forms.CheckboxSelectMultiple)
     tags = django_filters.ModelMultipleChoiceFilter(queryset=Tag.objects.all(),
         widget=forms.CheckboxSelectMultiple)
-    topics = django_filters.ModelMultipleChoiceFilter(queryset=Topic.objects.all(),
-        widget=forms.CheckboxSelectMultiple)
+    topics = django_filters.ModelMultipleChoiceFilter(
+        queryset=Topic.objects.all(),
+        widget=forms.CheckboxSelectMultiple
+    )
 
     class Meta:
         model = Content
@@ -48,11 +52,13 @@ class ContentBookmarkFilter(django_filters.FilterSet):
 
 class ContentTagFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(label='', lookup_expr='icontains',
-        widget=forms.TextInput(attrs={'placeholder': 'Search'}))
+        widget=forms.TextInput(attrs={'placeholder': 'Search'}), max_length=150)
     type = django_filters.MultipleChoiceFilter(label='', choices=media_types,
         widget=forms.CheckboxSelectMultiple)
-    topics = django_filters.ModelMultipleChoiceFilter(queryset=Topic.objects.all(),
-        widget=forms.CheckboxSelectMultiple)
+    topics = django_filters.ModelMultipleChoiceFilter(
+        queryset=Topic.objects.all(),
+        widget=forms.CheckboxSelectMultiple
+    )
 
     class Meta:
         model = Content
@@ -69,7 +75,7 @@ class ContentTagFilter(django_filters.FilterSet):
 
 class ContentTopicFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(label='', lookup_expr='icontains',
-        widget=forms.TextInput(attrs={'placeholder': 'Search'}))
+        widget=forms.TextInput(attrs={'placeholder': 'Search'}), max_length=150)
     type = django_filters.MultipleChoiceFilter(label='', choices=media_types,
         widget=forms.CheckboxSelectMultiple)
     tags = django_filters.ModelMultipleChoiceFilter(queryset=Tag.objects.all(),
