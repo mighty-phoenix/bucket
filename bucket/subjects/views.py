@@ -255,6 +255,15 @@ class AddToDatabaseView(LoginRequiredMixin, RedirectView):
                 url=book['preview_url'],
                 type='book',
             )
+            # add description
+            try:
+                description = book['details']['description']
+                if isinstance(description, dict):
+                    new_content.description = description['value']
+                else:
+                    new_content.description = description
+            except:
+                pass
             # add image
             #https://timmyomahony.com/blog/upload-and-validate-image-from-url-in-django
             image_url = 'https://covers.openlibrary.org/b/olid/' + id + '-M.jpg?default=false'
