@@ -38,13 +38,13 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-    - name: Run collectstatic
-      env:
-        SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      run: |
-        python bucket/manage.py collectstatic --noinput
     - name: Run Tests
       env:
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+        YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
       run: |
-        python bucket/manage.py test --settings=bucket.settings.testing
+        python bucket/manage.py test
