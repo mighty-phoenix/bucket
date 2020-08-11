@@ -1,8 +1,26 @@
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.test import TestCase, Client
+from django.core.files import File
 
+from subjects.models import Content
 from users.models import BucketUser
+
+class BaseTestCase(object):
+    def setUp(self):
+        self.content = Content.objects.create(
+            title="Test Content",
+            url="abc.com",
+            content_id="123456",
+            type='movie',
+            image=File(file=b""),
+            description="Test content description, this is.",
+            tags=['Action', 'Comedy'],
+            topics=['Strategy', 'Philosophy']
+        )
+        self.user = User.objects.create_user(username='bar', password='foobar')
+        self.bucketuser = BucketUser.objects.get(user=self.user)
+        self.bucketuser.content_bookmark.add(self.content)
 
 
 class UserViewTestCase(TestCase):
@@ -33,7 +51,6 @@ class UserViewTestCase(TestCase):
         response = self.client.get(user_url)
         self.assertContains(response, 'Edit profile')
         self.assertTemplateUsed(response, 'users/view_profile.html')
-        self.assertTemplateUsed(response, 'users/snippets/profile.html')
 
         new_user = User.objects.create_user(username='bar', password='foobar')
         new_user_url = reverse('user', kwargs={'username': new_user.username})
@@ -132,7 +149,7 @@ class BookmarkContentViewTestCase(BaseTestCase, TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         # test response while logged in
-        self.client.login(username='foo', password='foobar')
+        self.client.login(username='bar', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response.url.endswith('content/123456-test-content'))
@@ -156,26 +173,26 @@ class AllBookmarksViewTestCase(BaseTestCase, TestCase):
         * user login
         * correct object list
         """
-        url = reverse('all_bookmarks')
+        url = reverse('all_bookmarks', kwargs={'username': 'bar'})
         # test response while logged out
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         # test response while logged in
-        self.client.login(username='foo', password='foobar')
+        self.client.login(username='bar', password='foobar')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'subjects/all_bookmarks.html')
+        self.assertTemplateUsed(response, 'lists/list.html')
 
         # test object list
         self.assertContains(response, "Test Content")
-        self.assertEqual(len(response.context['bookmark_list']), 1)
+        self.assertEqual(response.context['object'].content.all().count(), 1)
         self.content2 = Content.objects.create(title="Content 2",
-                                               type=media_types[3][0])
-        self.content2.content_bookmarked_by.add(self.bucketuser)
+                                               type='tv')
+        self.bucketuser.content_bookmark.add(self.content2)
         response = self.client.get(url)
         self.assertContains(response, "Content 2")
-        self.assertEqual(len(response.context['bookmark_list']), 2)
-        self.content.content_bookmarked_by.remove(self.bucketuser)
-        self.content2.content_bookmarked_by.remove(self.bucketuser)
+        self.assertEqual(response.context['object'].content.all().count(), 2)
+        self.bucketuser.content_bookmark.remove(self.content)
+        self.bucketuser.content_bookmark.remove(self.content2)
         response = self.client.get(url)
-        self.assertEqual(len(response.context['bookmark_list']), 0)
+        self.assertEqual(response.context['object'].content.all().count(), 0)

@@ -16,11 +16,11 @@ class UserFormsTestCase(TestCase):
         self.assertEqual(type(form.bucket_user_form), BucketUserForm)
         data = {'first_name': 'Foo',
                 'last_name': 'Bar',
-                'blog_url': 'http://example.com/'}
+                'bio': 'about me'}
         form = UserForm(data=data, instance=self.user)
         self.assertTrue(form.is_valid())
         form.save()
         self.assertEqual(self.user.first_name, 'Foo')
         self.assertEqual(self.user.last_name, 'Bar')
         bucket_user = BucketUser.objects.get(user=self.user)
-        self.assertEqual(bucket_user.blog_url, 'http://example.com/')
+        self.assertEqual(bucket_user.bio, 'about me')
