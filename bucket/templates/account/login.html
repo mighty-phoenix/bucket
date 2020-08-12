@@ -10,7 +10,6 @@
 {% load staticfiles %}
   <div class="container">
     <form class="login form-signin" role="form" method="POST" action="{% url 'account_login' %}">
-      <div>
       {% csrf_token %}
       {{ form|crispy }}
       {% if redirect_field_value %}
@@ -22,7 +21,13 @@
       <button class="primaryAction btn btn-lg btn-primary btn-block"
               type="submit" id="login_button">Sign In
       </button>
+      <p class="or-delimiter">or</p>
+
+      <p>Sign in with one of your existing third party accounts.</p>
     </form>
+    <div class="social-buttons form-signin">
+      {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+    </div>
   </div>
 
   <div class="mt40"></div>

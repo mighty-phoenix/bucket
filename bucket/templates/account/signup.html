@@ -10,6 +10,10 @@
 {% load staticfiles %}
   <div class="container">
     <form class="login form-signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
+      <div>
+          <h3>Sign Up Using<a href="{% provider_login_url 'google' %}"><img class="auth-img" src="{% static 'img/google.jpg' %}"></a></h3>
+      </div>
+      <hr>
       {% csrf_token %}
       {{ form|crispy }}
       {% if redirect_field_value %}
