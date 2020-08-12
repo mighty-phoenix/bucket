@@ -35,7 +35,7 @@
       {% endfor %}
       <p class="text-muted small inline">
         {{ number_of_items }} items &nbsp;
-        {{ percent_complete }}% completed
+        {% if percent_complete %}{{ percent_complete }}% completed{% endif %}
       </p>
       <div class="col-md-8 offset-md-2">
         {% for content in path_content %}

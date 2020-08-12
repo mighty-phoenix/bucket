@@ -38,9 +38,11 @@ class ViewPath(UserMixin, DetailView):
         path_content = PathContent.objects.filter(path=self.object)
         context['path_content'] = path_content
         context['number_of_items'] = path_content.count()
-        completed = PathContent.objects.filter(path=self.object,
+        number_completed = PathContent.objects.filter(path=self.object,
             completed=True).count()
-        context['percent_complete'] = completed*100.0 / path_content.count()
+        number_total = path_content.count()
+        if number_total > 0:
+            context['percent_complete'] = number_completed*100.0 / number_total
         return context
 
 
