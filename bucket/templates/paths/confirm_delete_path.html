@@ -12,7 +12,7 @@
     <hr/>
   </div>
   <div class="col-md-12">
-    <form action="{% url 'delete_list' object.slug %}" method="post">
+    <form action="{% url 'delete_path' object.slug %}" method="post">
     {% csrf_token %}
     <p>Are you sure you want to delete "{{ object.goal }}"?</p>
     <input type="submit" value="Confirm" class="btn btn-danger" />
