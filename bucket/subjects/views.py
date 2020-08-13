@@ -31,7 +31,6 @@ from lists.models import List
 
 
 tmdb.API_KEY = os.environ['TMDB_API_KEY']
-YOUTUBE_API_KEY = os.environ['YOUTUBE_API_KEY']
 
 
 class SubjectsList(ListView):
@@ -344,6 +343,7 @@ class BooksPageView(UserListsMixin, FormView):
         return context
 
 
+"""
 class YoutubePageView(UserListsMixin, FormView):
     template_name = 'subjects/youtube_page.html'
     form_class = SearchYoutube
@@ -360,3 +360,4 @@ class YoutubePageView(UserListsMixin, FormView):
             videos = requests.get(url).json()['items']
             context['videos'] = videos
         return context
+"""
