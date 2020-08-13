@@ -36,7 +36,8 @@
     $ \c bucketdb;
     $ GRANT ALL PRIVILEGES ON bucketdb TO <username created above>;
     ```
-1. Fill in the database details in `bucket/settings/dev.py`.
+1. Fill in the database details in `bucket/bucket/settings/dev.py`.
+1. Run `git update-index --assume-unchanged bucket/manage.py bucket/bucket/wsgi.py`. In `manage.py` and `wsgi.py` change `'bucket.settings.production'` to `'bucket.settings.dev'`. 
 1. Run `set SECRET_KEY=foobarbaz` in your terminal, ideally the secret key
   should be 40 characters long, unique and unpredictable. 
 1. You will need a TMDB API key, which you can register and get from [here](https://developers.themoviedb.org/3). Run `set TMDB_API_KEY=apikey` in your terminal.
