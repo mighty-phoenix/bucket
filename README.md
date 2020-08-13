@@ -20,7 +20,7 @@
      ```bash
      $ virtualenv venv
      $ ./venv/Scripts/activate
-     $ pip install -r requirements/dev.txt 
+     $ pip install -r requirements.txt 
      ```
 1. Create `bucketdb` database, where `bucketdb` might be any suitable name.
 - Open the SQL Shell for postgresql from the windows start menu or wherever accessible
