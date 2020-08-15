@@ -12,11 +12,15 @@ from common.constants import status, visibility
 from subjects.models import Content
 
 
+def user_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return 'users/user_{0}/{1}'.format(instance.user.id, filename)
+
 class BucketUser(models.Model):
     """Profile model to store additional information about a user"""
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.TextField(max_length=100, blank=True, verbose_name="Bio")
-    profile_picture = models.ImageField(upload_to='users/pictures/',
+    profile_picture = models.ImageField(upload_to=user_directory_path,
                                         blank=True,
                                         null=True,
                                         verbose_name="Profile picture")
