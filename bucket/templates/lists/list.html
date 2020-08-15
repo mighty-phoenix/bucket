@@ -38,6 +38,7 @@
         </span>
         {% endif %}
       </h1>
+      <p>created by <a href="{{ list.user.get_absolute_url }}">{{ list.user }}</a></p>
       <hr/>
       <p>{{ list.description | linebreaks}}</p>
       {% for topic in list.topics.all %}
