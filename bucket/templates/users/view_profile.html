@@ -23,7 +23,19 @@
       {% endif %}
     </div>
     <div class="col-sm-9 col-lg-10">
-      <h2>{{ bucketuser }}</h2>
+      <h2>
+        {{ bucketuser }}&nbsp;
+        {% if user != bucketuser.user %}
+        <a href="{% url 'follow_user' bucketuser.user.username %}"
+           role="button" class="btn btn-sm btn-dark">
+           {% if follow_status == True %}
+           Unfollow
+           {% else %}
+           Follow
+           {% endif %}
+         </a>
+        {% endif %}
+      </h2>
       {% if user == bucketuser.user or user.is_superuser %}
       <div class="right">
         <a href="{% url 'user_profile' bucketuser.user.username %}"
@@ -32,6 +44,10 @@
       {% endif %}
       <hr/>
       <p>{{ bucketuser.bio }}</p>
+      <p class="text-muted small inline">
+        {{ followers_count }} Follower{{ followers_count|pluralize }} &nbsp;
+        {{ following_count }} Following &nbsp;
+      </p>
     </div>
   </div>
   <div class="mb40"></div>

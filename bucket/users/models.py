@@ -23,6 +23,8 @@ class BucketUser(models.Model):
     profile_picture_thumbnail = ImageSpecField(source='profile_picture',
                                                processors=[ResizeToFill(100, 100)],
                                                options={'quality': 100})
+    users_following = models.ManyToManyField("self", through='FollowUser',
+                                             symmetrical=False)
     content_bookmark = models.ManyToManyField(Content, through='Bookmark',
                                               related_name='content_bookmarked_by')
 
@@ -60,6 +62,20 @@ def create_bucket_user(sender, instance, created, **kwargs):
         if instance is not None:
             bucket_user = BucketUser(user=instance)
             bucket_user.save()
+
+
+class FollowUser(models.Model):
+    followed_user = models.ForeignKey(BucketUser, on_delete=models.CASCADE,
+                                      related_name="followed_user")
+    follower = models.ForeignKey(BucketUser, on_delete=models.CASCADE,
+                               related_name="follower")
+    date_added = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('followed_user', 'follower',)
+
+    def __str__(self):
+      return "{0} follows {1}".format(self.follower, self.followed_user)
 
 
 class Bookmark(models.Model):

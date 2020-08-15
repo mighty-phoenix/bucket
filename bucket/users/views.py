@@ -11,7 +11,7 @@ from subjects.filters import ContentBookmarkFilter
 from subjects.models import Content
 from users.mixins import UserMixin
 from users.forms import UserForm
-from users.models import BucketUser
+from users.models import BucketUser, FollowUser
 from lists.views import ViewList
 from lists.models import List
 
@@ -33,6 +33,12 @@ class UserView(LoginRequiredMixin, TemplateView):
             context['user_lists'] = bucketuser.list_set.all()
         else:
             context['user_lists'] = bucketuser.list_set.filter(visibility='public')
+        context['followers_count'] = FollowUser.objects.filter(followed_user=bucketuser).count()
+        context['following_count'] = FollowUser.objects.filter(follower=bucketuser).count()
+        context['follow_status'] = FollowUser.objects.filter(
+            follower=request_bucketuser,
+            followed_user=bucketuser
+        ).exists()
         return context
 
 
@@ -78,7 +84,24 @@ class UserProfileView(LoginRequiredMixin, MultiplePermissionsRequiredMixin,
         return any(permissions)
 
 
-#https://stackoverflow.com/questions/35796195/how-to-redirect-to-previous-page-in-django-after-post-request
+class FollowUserView(LoginRequiredMixin, RedirectView):
+    """Follow or unfollow a user"""
+    model = BucketUser
+
+    def get_redirect_url(self, *args, **kwargs):
+        bucketuser = get_object_or_404(BucketUser, user=self.request.user)
+        followed_user = get_object_or_404(BucketUser,
+            user__username=self.kwargs['username'])
+        relation = FollowUser.objects.filter(follower=bucketuser,
+            followed_user=followed_user)
+        if relation.exists():
+            relation.delete()
+        else:
+            FollowUser.objects.create(follower=bucketuser,
+                                      followed_user=followed_user)
+        return followed_user.get_absolute_url()
+
+
 class BookmarkContentView(LoginRequiredMixin, RedirectView):
     """Bookmark content"""
     model = BucketUser
