@@ -32,9 +32,9 @@
           <a class="btn" href="{% url 'add_to_list_from_list_page' list.slug %}">
             <i class="fas fa-plus"></i>
           </a>
-          {% endif %}
           <a class="btn" href="{% url 'edit_list' list.slug %}"><i class="fas fa-pencil-alt"></i></a>
           <a class="btn" href="{% url 'delete_list' list.slug %}"><i class="fas fa-trash-alt"></i></a>
+          {% endif %}
         </span>
         {% endif %}
       </h1>
