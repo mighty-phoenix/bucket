@@ -172,7 +172,7 @@ class SearchExternalDataView(UserListsMixin, FormView):
                 tvshows = tmdb.Search().tv(query=search)['results']
                 context['contents'] = sorted(tvshows, key=lambda x: x['popularity'], reverse=True)
             elif type == 'book':
-                url = 'http://openlibrary.org/search.json?title=' + search
+                url = 'http://openlibrary.org/search.json?q=' + search
                 books = requests.get(url).json()['docs']
                 context['contents'] = books
         return context
