@@ -5,7 +5,8 @@ from subjects.views import *
 urlpatterns = [
     url(r'^subjects/$', SubjectsList.as_view(), name='list_subjects'),
     url(r'^(?P<slug>[\w-]+)$', SubjectPageView.as_view(), name='view_subject_page'),
-    url(r'^$', ContentsPage.as_view(), name='contents_page'),
+    url(r'^$', HomePage.as_view(), name='homepage'),
+    url(r'^content/$', ContentsPage.as_view(), name='contents_page'),
     url(r'^search/$', SearchExternalDataView.as_view(), name='search_external_data'),
     url(r'^movies/$', MoviesPageView.as_view(), name='movies_page'),
     url(r'^tv-shows/$', TVShowsPageView.as_view(), name='tvshows_page'),

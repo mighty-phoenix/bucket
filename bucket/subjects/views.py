@@ -66,6 +66,20 @@ class SubjectPageView(ListView):
         return context
 
 
+class HomePage(FilterView):
+    """Home page"""
+    model = Content
+    template_name = "subjects/homepage.html"
+    filterset_class = ContentFilter
+
+    def get_context_data(self, **kwargs):
+        context = super(HomePage, self).get_context_data(**kwargs)
+        context['movie_list'] = Content.objects.filter(type='movie')
+        context['book_list'] = Content.objects.filter(type='book')
+        context['tv_list'] = Content.objects.filter(type='tv')
+        return context
+
+
 class ContentsPage(UserListsMixin, FilterView):
     """List all content"""
     model = Content

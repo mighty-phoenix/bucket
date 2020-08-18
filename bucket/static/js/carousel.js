@@ -17,7 +17,8 @@ $(document).ready(function(){
 })
 
 $('.carousel').carousel({
-    interval: 3000
+    interval: false,
+    wrap: false
 })
 
 $('.carousel .carousel-item').each(function() {
@@ -35,5 +36,13 @@ $('.carousel .carousel-item').each(function() {
         }
 
         next.children(':first-child').clone().appendTo($(this));
+    }
+});
+
+$('.carousel').bind('wheel', function(e) {
+    if(e.originalEvent.wheelDelta /120 > 0) {
+        $(this).carousel('next');
+    } else {
+        $(this).carousel('prev');
     }
 });
