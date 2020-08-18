@@ -1,39 +1,37 @@
 {% load static %}
 
-<div class="card border-light mb-3">
-  <div class="card-body">
-    <div class="row">
-      <div class="col-sm-4 col-lg-3">
-        {% if content.image %}
-        <img class="card-image img-fluid" src="{{ content.image_thumbnail.url }}" style="width: 100px" />
-        {% else %}
-        <img class="card-image img-fluid" src="{% static 'img/cover.png' %}" style="width: 100px" />
-        {% endif %}
-      </div>
-      <div class="col-sm-8 col-lg-9 left">
-        <h3 class="card-title">
-          <a class="card-link" href="{% url 'view_content' content.slug %}">{{ content.title | truncatechars:13 }}</a>
-          <div class="right">
-            {% include 'subjects/snippets/bookmark_content.html' %}
-            {% if not '/list/' in request.path and not '/bookmarks/' in request.path %}
-            {% include 'lists/snippets/add_to_list_from_contents_page.html' %}
-            {% endif %}
-            {% if '/list/' in request.path and list.user == bucketuser and list.name != 'Bookmarks' %}
-            <a class="btn" href="{% url 'remove_from_list' list.slug content.slug %}?next={{ request.path }}"">
-              <i class="fas fa-minus-square"></i>
-            </a>
-            {% endif %}
-          </div>
-        </h3>
-        {% for tag in content.tags.all %}
-        <a class="text-muted small inline" href="{{ tag.get_absolute_url }}">{{ tag }}</a>
-        {% endfor %}
-        <br>
-        {% for topic in content.topics.all %}
-        <a class="text-muted small inline" href="{{ topic.get_absolute_url }}">{{ topic }}</a>
-        {% endfor %}
-        <p class="small"><em>{{ content.get_type_display }}</em></p>
-      </div>
+<div class="card border-light mb-3 carousel-item {{ content.get_type_display }}">
+  <div class="card-body col-lg-2 col-md-4">
+    <div>
+      {% if content.image %}
+      <img class="card-image img-fluid" src="{{ content.image_thumbnail.url }}" style="width: 100px" />
+      {% else %}
+      <img class="card-image img-fluid" src="{% static 'img/cover.png' %}" style="width: 100px" />
+      {% endif %}
+    </div>
+    <div class="col-sm-8 col-lg-9">
+      <h3 class="card-title">
+        <a class="card-link" href="{% url 'view_content' content.slug %}">{{ content.title | truncatechars:13 }}</a>
+        <div class="right row">
+          {% include 'subjects/snippets/bookmark_content.html' %}
+          {% if not '/list/' in request.path and not '/bookmarks/' in request.path %}
+          {% include 'lists/snippets/add_to_list_from_contents_page.html' %}
+          {% endif %}
+          {% if '/list/' in request.path and list.user == bucketuser and list.name != 'Bookmarks' %}
+          <a class="btn" href="{% url 'remove_from_list' list.slug content.slug %}?next={{ request.path }}"">
+            <i class="fas fa-minus-square"></i>
+          </a>
+          {% endif %}
+        </div>
+      </h3>
+      {% for tag in content.tags.all %}
+      <a class="text-muted small inline" href="{{ tag.get_absolute_url }}">{{ tag }}</a>
+      {% endfor %}
+      <br>
+      {% for topic in content.topics.all %}
+      <a class="text-muted small inline" href="{{ topic.get_absolute_url }}">{{ topic }}</a>
+      {% endfor %}
+      <p class="small"><em>{{ content.get_type_display }}</em></p>
     </div>
   </div>
 </div>
