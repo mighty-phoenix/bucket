@@ -18,7 +18,7 @@
 
         <div class="collapse" id="collapseExample">
           <div class="card card-body">
-            <p>Type</p>
+            <p><b>Type</b></p>
             <div class="form-group">
               {% for checkbox in filter.form.type %}
               <div class="form-check form-check-inline">
@@ -28,17 +28,7 @@
               </div>
               {% endfor %}
             </div>
-            <p>Genre</p>
-            <div class="form-group">
-              {% for checkbox in filter.form.tags %}
-              <div class="form-check form-check-inline">
-                <label class="form-check-label">
-                {{ checkbox.tag }} {{ checkbox.choice_label }}
-                </label>
-              </div>
-              {% endfor %}
-            </div>
-            <p>Topic</p>
+            <p><b>Topic</b></p>
             <div class="form-group">
               {% for checkbox in filter.form.topics %}
               <div class="form-check form-check-inline">
@@ -51,20 +41,19 @@
           </div>
         </div>
       </form>
-      <div class="movie-title title">MOVIES</div>
 
       {% comment %}
       <div class="mt20"></div>
       <a href="{% url 'add_content' %}" role="button" class="btn"><i class="fas fa-plus"></i>&nbsp; Add new content</a>
       <div class="mb40"></div>
       {% endcomment %}
+
+      <div class="movie-title title text-left">MOVIES</div>
       <div class="carousel slide w-200" id="movieCarousel">
         <div class="carousel-inner w-200" role="listbox">
-          <div class="card-deck mx-0">
-            {% for content in movie_list %}
-            {% include 'subjects/snippets/homepage_content_card.html' %}
-            {% endfor %}
-          </div>
+          {% for content in movies %}
+          {% include 'subjects/snippets/homepage_content_card.html' %}
+          {% endfor %}
         </div>
         <a class="carousel-control-prev bg-light w-auto" href="#movieCarousel" role="button" data-slide="prev">
           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -75,14 +64,13 @@
           <span class="sr-only">Next</span>
         </a>
       </div>
-      <div class="book-title title">BOOKS</div>
+      <div class="mb40"></div>
+      <div class="book-title title text-left">BOOKS</div>
       <div class="carousel slide w-200" id="bookCarousel">
         <div class="carousel-inner w-200" role="listbox">
-          <div class="card-deck mx-0">
-            {% for content in book_list %}
-            {% include 'subjects/snippets/homepage_content_card.html' %}
-            {% endfor %}
-          </div>
+          {% for content in books %}
+          {% include 'subjects/snippets/homepage_content_card.html' %}
+          {% endfor %}
         </div>
         <a class="carousel-control-prev bg-light w-auto" href="#bookCarousel" role="button" data-slide="prev">
           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -93,14 +81,13 @@
           <span class="sr-only">Next</span>
         </a>
       </div>
-      <div class="tv-title title">TV SHOWS</div>
+      <div class="mb40"></div>
+      <div class="tv-title title text-left">TV SHOWS</div>
       <div class="carousel slide w-200" id="tvCarousel">
         <div class="carousel-inner w-200" role="listbox">
-          <div class="card-deck mx-0">
-            {% for content in tv_list %}
-            {% include 'subjects/snippets/homepage_content_card.html' %}
-            {% endfor %}
-          </div>
+          {% for content in tv_shows %}
+          {% include 'subjects/snippets/homepage_content_card.html' %}
+          {% endfor %}
         </div>
         <a class="carousel-control-prev bg-light w-auto" href="#tvCarousel" role="button" data-slide="prev">
           <span class="carousel-control-prev-icon" aria-hidden="true"></span>

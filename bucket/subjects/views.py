@@ -74,9 +74,9 @@ class HomePage(FilterView):
 
     def get_context_data(self, **kwargs):
         context = super(HomePage, self).get_context_data(**kwargs)
-        context['movie_list'] = Content.objects.filter(type='movie')
-        context['book_list'] = Content.objects.filter(type='book')
-        context['tv_list'] = Content.objects.filter(type='tv')
+        context['movies'] = Content.objects.filter(type='movie')
+        context['books'] = Content.objects.filter(type='book')
+        context['tv_shows'] = Content.objects.filter(type='tv')
         return context
 
 

@@ -1,18 +1,22 @@
 /*!
  * Custom CSS
  */
-body { padding-top: 50px; }
+body {
+  font-family: 'Helvetica', sans-serif;
+  padding-top: 50px;
+}
+
 @media screen and (max-width: 768px) {
     body { padding-top: 50px; }
 }
 
-.card {
+.content-card {
   flex-direction: row !important;
 }
 
 .title {
   font-weight: bold;
-  color: brown;
+  font-size: 20px;
 }
 
 .small-title {
