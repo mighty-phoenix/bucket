@@ -29,8 +29,12 @@ body {
   opacity: 1 !important;
 }
 
-.card-title {
+.homepage-card-title {
   font-size: 15px !important;
+}
+
+.content-card-title {
+  font-size: 20px !important
 }
 
 .right {

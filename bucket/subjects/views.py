@@ -66,7 +66,7 @@ class SubjectPageView(ListView):
         return context
 
 
-class HomePage(FilterView):
+class HomePage(UserListsMixin, FilterView):
     """Home page"""
     model = Content
     template_name = "subjects/homepage.html"
